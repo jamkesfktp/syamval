@@ -87,7 +87,7 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
   };
 
   const handleExport = () => {
-    exportPptx(`Slide_${currentSlide}_RSUD_Syamsudin`);
+    exportPptx(currentSlide, data);
   };
 
   const isEmerald = theme === 'syamsudin-emerald';
