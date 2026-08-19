@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { TabKey, DashboardData } from './types';
 import defaultDashboardData from './data/dashboardData.json';
 import Layout from './components/Layout';
+import Login from './components/Login';
 import KpiCards from './components/KpiCards';
 import SmfDistribution from './components/SmfDistribution';
 import CoderPerformance from './components/CoderPerformance';
@@ -9,17 +10,8 @@ import CaseManagerPerformance from './components/CaseManagerPerformance';
 import RoomDistribution from './components/RoomDistribution';
 import SpeedAnalysis from './components/SpeedAnalysis';
 import AccuracyChart from './components/AccuracyChart';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-import { formatNumber } from './types';
+import BottleneckAnalysis from './components/BottleneckAnalysis';
+import IssueTracker from './components/IssueTracker';
 import { parseExcelToDashboardData } from './utils/excelParser';
 
 const tabTitles: Record<TabKey, string> = {
@@ -28,9 +20,12 @@ const tabTitles: Record<TabKey, string> = {
   'kinerja-cm': 'Kinerja Case Manager',
   'distribusi-ruangan': 'Distribusi Ruangan',
   'kecepatan-akurasi': 'Kecepatan & Akurasi',
+  bottleneck: 'Analisis Bottleneck',
+  kendala: 'Issue Tracker (Kendala)'
 };
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('ringkasan');
   const [data, setData] = useState<DashboardData>(defaultDashboardData as any);
   
@@ -119,8 +114,18 @@ export default function App() {
             />
           </div>
         );
+      case 'bottleneck':
+        return <BottleneckAnalysis data={data} />;
+      case 'kendala':
+        return <IssueTracker data={data} />;
+      default:
+        return null;
     }
   };
+
+  if (!isLoggedIn) {
+    return <Login onLoginSuccess={() => setIsLoggedIn(true)} />;
+  }
 
   return (
     <Layout

@@ -1,4 +1,4 @@
-export type TabKey = 'ringkasan' | 'kinerja-koder' | 'kinerja-cm' | 'distribusi-ruangan' | 'kecepatan-akurasi';
+export type TabKey = 'ringkasan' | 'kinerja-koder' | 'kinerja-cm' | 'distribusi-ruangan' | 'kecepatan-akurasi' | 'bottleneck' | 'kendala';
 
 export interface Summary {
   total_coded: number;
@@ -22,6 +22,7 @@ export interface CoderMetric {
   with_cm_notes: number;
   accuracy: number;
   avg_delay_hours: number;
+  max_delay_hours: number;
   total_realcost: number;
   avg_realcost: number;
 }
@@ -35,6 +36,8 @@ export interface CmMetric {
   with_issues: number;
   accuracy: number;
   completion_rate: number;
+  avg_delay_hours: number;
+  max_delay_hours: number;
   total_realcost: number;
 }
 
@@ -56,11 +59,18 @@ export interface RoomMetric {
   total_coded: number;
   total_pending: number;
   with_issues: number;
+  avg_delay_hours: number;
+  max_delay_hours: number;
   total_realcost: number;
 }
 
 export interface SmfDistribution {
   [key: string]: number;
+}
+
+export interface IssueMetric {
+  issue: string;
+  count: number;
 }
 
 export interface DashboardData {
@@ -70,6 +80,7 @@ export interface DashboardData {
   pic_metrics: PicMetric[];
   room_metrics: RoomMetric[];
   smf_distribution: SmfDistribution;
+  issue_metrics: IssueMetric[];
   claims_coded_sample: Record<string, string | number>[];
 }
 
