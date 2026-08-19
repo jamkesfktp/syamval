@@ -1,5 +1,6 @@
 export type TabKey =
   | 'ringkasan'
+  | 'presentasi'
   | 'kinerja-koder'
   | 'kinerja-cm'
   | 'distribusi-ruangan'

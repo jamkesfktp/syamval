@@ -12,6 +12,7 @@ import CoderSpeedAccuracy from './components/CoderSpeedAccuracy';
 import CaseManagerSpeedAccuracy from './components/CaseManagerSpeedAccuracy';
 import BottleneckAnalysis from './components/BottleneckAnalysis';
 import IssueTracker from './components/IssueTracker';
+import ManagementPresentation from './components/ManagementPresentation';
 import {
   BarChart,
   Bar,
@@ -27,6 +28,7 @@ import { parseExcelToDashboardData } from './utils/excelParser';
 
 const tabTitles: Record<TabKey, string> = {
   ringkasan: 'Ringkasan Eksekutif',
+  presentasi: 'Slide Presentasi Manajemen',
   'kinerja-koder': 'Kinerja Koder',
   'kinerja-cm': 'Kinerja Case Manager',
   'distribusi-ruangan': 'Distribusi Ruangan',
@@ -103,6 +105,9 @@ export default function App() {
           </div>
         );
       }
+
+      case 'presentasi':
+        return <ManagementPresentation data={data} />;
 
       case 'kinerja-koder':
         return <CoderPerformance coderMetrics={coder_metrics} />;

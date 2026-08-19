@@ -1,6 +1,7 @@
 import type { TabKey } from '../types';
 import {
   LayoutDashboard,
+  Presentation,
   UserCog,
   Users,
   Building2,
@@ -19,6 +20,7 @@ interface TabNavigationProps {
 
 const tabs: { key: TabKey; label: string; icon: typeof LayoutDashboard }[] = [
   { key: 'ringkasan', label: 'Ringkasan', icon: LayoutDashboard },
+  { key: 'presentasi', label: 'Slide Presentasi Manajemen', icon: Presentation },
   { key: 'kinerja-koder', label: 'Kinerja Koder', icon: UserCog },
   { key: 'kinerja-cm', label: 'Kinerja Case Manager', icon: Users },
   { key: 'distribusi-ruangan', label: 'Distribusi Ruangan', icon: Building2 },
