@@ -40,17 +40,20 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     if (!val && val !== 0) return null;
     
     if (typeof val === 'number') {
+      // When Excel serializes Indonesian DD/MM/YYYY dates under US locale:
+      // parsed.m contains the original Day (1..12)
+      // parsed.d contains the original Month (e.g. 7 for July, 8 for August)
       const parsed = xlsx.SSF.parse_date_code(val);
       if (!parsed) return null;
       
+      let day = parsed.m;
+      let month = parsed.d;
       let year = parsed.y;
-      let month = parsed.m;
-      let day = parsed.d;
 
-      // In Syamval reports, date of input coding is entered as DD/MM/YYYY but Excel serializes as M/D/YYYY
-      if (month === 1 && day >= 1 && day <= 31) {
-        month = day;
-        day = parsed.m;
+      if (month > 12 && day <= 12) {
+        const temp = day;
+        day = month;
+        month = temp;
       }
 
       return Date.UTC(year, month - 1, day, 0, 0, 0, 0);
