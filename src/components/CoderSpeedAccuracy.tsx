@@ -23,7 +23,10 @@ interface CoderSpeedAccuracyProps {
 export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpeedAccuracyProps) {
   const [selectedCoder, setSelectedCoder] = useState<string | null>(null);
 
-  const activeCoders = coderMetrics.filter((c) => (c.total_claims ?? 0) > 0);
+  // Urutkan dari yang tercepat (avg_delay_days terendah) sampai terlambat
+  const activeCoders = [...coderMetrics]
+    .filter((c) => (c.total_claims ?? 0) > 0)
+    .sort((a, b) => (a.avg_delay_days ?? a.avg_delay_hours ?? 0) - (b.avg_delay_days ?? b.avg_delay_hours ?? 0));
 
   const delayData = activeCoders.map((c) => ({
     name: c.short_name,
@@ -181,6 +184,7 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
           <table className="w-full text-xs text-left">
             <thead className="bg-gray-50/80 text-gray-500 uppercase">
               <tr>
+                <th className="py-3 px-4 font-semibold text-center w-12">#</th>
                 <th className="py-3 px-4 font-semibold">Nama Koder</th>
                 <th className="py-3 px-4 font-semibold text-right">Total Klaim</th>
                 <th className="py-3 px-4 font-semibold text-right">Bermasalah</th>
@@ -192,12 +196,15 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {activeCoders.map((coder) => (
+              {activeCoders.map((coder, idx) => (
                 <tr
                   key={coder.name}
                   onClick={() => setSelectedCoder(coder.name)}
                   className="hover:bg-teal-50/40 cursor-pointer transition-colors group"
                 >
+                  <td className="py-3 px-4 text-center font-bold text-gray-500 font-mono">
+                    {idx + 1}
+                  </td>
                   <td className="py-3 px-4 font-medium text-gray-800 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-teal-500 group-hover:scale-125 transition-transform" />
                     {coder.name}

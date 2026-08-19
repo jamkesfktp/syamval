@@ -25,14 +25,19 @@ export default function CaseManagerSpeedAccuracy({
 }: CaseManagerSpeedAccuracyProps) {
   const [selectedCm, setSelectedCm] = useState<string | null>(null);
 
-  const delayData = cmMetrics.map((cm) => ({
+  // Urutkan Case Manager dari yang tercepat (avg_delay_days terendah) sampai terlambat
+  const activeCms = [...cmMetrics]
+    .filter((cm) => (cm.total_coded ?? 0) > 0 || (cm.total_all ?? 0) > 0)
+    .sort((a, b) => (a.avg_delay_days ?? a.avg_delay_hours ?? 0) - (b.avg_delay_days ?? b.avg_delay_hours ?? 0));
+
+  const delayData = activeCms.map((cm) => ({
     name: cm.name.replace('Dr. ', ''),
     fullName: cm.name,
     'Rata-rata Delay (Hari)': Number((cm.avg_delay_days ?? cm.avg_delay_hours ?? 0).toFixed(1)),
     'Max Delay (Hari)': Number((cm.max_delay_days ?? cm.max_delay_hours ?? 0).toFixed(1)),
   }));
 
-  const completionData = cmMetrics.map((cm) => ({
+  const completionData = activeCms.map((cm) => ({
     name: cm.name.replace('Dr. ', ''),
     fullName: cm.name,
     'Selesai (%)': Number((cm.completion_rate ?? 0).toFixed(1)),
@@ -48,12 +53,12 @@ export default function CaseManagerSpeedAccuracy({
     );
   };
 
-  const avgCmCompletion = cmMetrics.length > 0
-    ? cmMetrics.reduce((acc, c) => acc + (c.completion_rate ?? 0), 0) / cmMetrics.length
+  const avgCmCompletion = activeCms.length > 0
+    ? activeCms.reduce((acc, c) => acc + (c.completion_rate ?? 0), 0) / activeCms.length
     : 0;
 
-  const avgCmDelay = cmMetrics.length > 0
-    ? cmMetrics.reduce((acc, c) => acc + (c.avg_delay_days ?? c.avg_delay_hours ?? 0), 0) / cmMetrics.length
+  const avgCmDelay = activeCms.length > 0
+    ? activeCms.reduce((acc, c) => acc + (c.avg_delay_days ?? c.avg_delay_hours ?? 0), 0) / activeCms.length
     : 0;
 
   return (
@@ -171,9 +176,10 @@ export default function CaseManagerSpeedAccuracy({
           <table className="w-full text-xs text-left">
             <thead className="bg-gray-50/80 text-gray-500 uppercase">
               <tr>
+                <th className="py-3 px-4 font-semibold text-center w-12">#</th>
                 <th className="py-3 px-4 font-semibold">Nama Case Manager</th>
                 <th className="py-3 px-4 font-semibold">Ruangan Asuhan</th>
-                <th className="py-3 px-4 font-semibold text-right">Total Klaim</th>
+                <th className="py-3 px-4 font-semibold text-right">Total Pasien</th>
                 <th className="py-3 px-4 font-semibold text-right">Selesai</th>
                 <th className="py-3 px-4 font-semibold text-right">Pending</th>
                 <th className="py-3 px-4 font-semibold text-right">Akurasi</th>
@@ -183,12 +189,15 @@ export default function CaseManagerSpeedAccuracy({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {cmMetrics.map((cm) => (
+              {activeCms.map((cm, idx) => (
                 <tr
                   key={cm.name}
                   onClick={() => setSelectedCm(cm.name)}
                   className="hover:bg-blue-50/40 cursor-pointer transition-colors group"
                 >
+                  <td className="py-3 px-4 text-center font-bold text-gray-500 font-mono">
+                    {idx + 1}
+                  </td>
                   <td className="py-3 px-4 font-bold text-gray-800 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500 group-hover:scale-125 transition-transform" />
                     {cm.name}
