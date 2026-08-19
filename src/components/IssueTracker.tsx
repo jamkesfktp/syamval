@@ -1,4 +1,4 @@
-import { DashboardData } from '../types';
+import type { DashboardData } from '../types';
 import { AlertTriangle } from 'lucide-react';
 import {
   BarChart,

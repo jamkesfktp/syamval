@@ -1,4 +1,4 @@
-import { DashboardData } from '../types';
+import type { DashboardData } from '../types';
 import { Clock, AlertCircle } from 'lucide-react';
 
 export default function BottleneckAnalysis({ data }: { data: DashboardData }) {
