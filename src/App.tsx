@@ -12,6 +12,17 @@ import SpeedAnalysis from './components/SpeedAnalysis';
 import AccuracyChart from './components/AccuracyChart';
 import BottleneckAnalysis from './components/BottleneckAnalysis';
 import IssueTracker from './components/IssueTracker';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { formatNumber } from './types';
 import { parseExcelToDashboardData } from './utils/excelParser';
 
 const tabTitles: Record<TabKey, string> = {
