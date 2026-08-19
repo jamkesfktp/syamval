@@ -13,61 +13,23 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   // Captcha State
   const [isCaptchaSolved, setIsCaptchaSolved] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseDown = () => {
-    if (!isCaptchaSolved) setIsDragging(true);
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    if (isCaptchaSolved) return;
+    
+    setSliderPosition(val);
+    if (val >= 95) {
+      setIsCaptchaSolved(true);
+      setSliderPosition(100);
+    }
   };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
+  const handleSliderRelease = () => {
     if (!isCaptchaSolved) {
-      if (sliderPosition > 85) {
-        setIsCaptchaSolved(true);
-        setSliderPosition(100);
-      } else {
-        setSliderPosition(0);
-      }
+      setSliderPosition(0);
     }
   };
-
-  const handleMouseMove = (e: any) => {
-    if (isDragging && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      let newLeft = ((e.clientX - rect.left) / rect.width) * 100;
-      if (newLeft < 0) newLeft = 0;
-      if (newLeft > 100) newLeft = 100;
-      setSliderPosition(newLeft);
-    }
-  };
-  
-  // Touch support
-  const handleTouchMove = (e: any) => {
-    if (isDragging && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      let newLeft = ((touch.clientX - rect.left) / rect.width) * 100;
-      if (newLeft < 0) newLeft = 0;
-      if (newLeft > 100) newLeft = 100;
-      setSliderPosition(newLeft);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('touchend', handleMouseUp);
-    document.addEventListener('touchmove', handleTouchMove);
-    return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('touchend', handleMouseUp);
-      document.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, [isDragging]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,27 +101,47 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <div className="mt-4">
             <label className="text-sm font-medium text-gray-700 block mb-2">Verifikasi Keamanan</label>
             <div 
-              className={`relative h-12 rounded-lg overflow-hidden border ${isCaptchaSolved ? 'bg-green-50 border-green-200' : 'bg-gray-100 border-gray-300'}`}
-              ref={containerRef}
+              className={`relative h-12 rounded-xl overflow-hidden border select-none transition-all ${
+                isCaptchaSolved ? 'bg-emerald-50 border-emerald-300' : 'bg-gray-100 border-gray-200'
+              }`}
             >
               <div 
-                className={`absolute inset-y-0 left-0 transition-all duration-100 ease-out ${isCaptchaSolved ? 'bg-green-100' : 'bg-teal-100'}`}
+                className={`absolute inset-y-0 left-0 transition-all duration-75 ${
+                  isCaptchaSolved ? 'bg-emerald-500' : 'bg-teal-500/20'
+                }`}
                 style={{ width: `${sliderPosition}%` }}
-              ></div>
+              />
               
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-500 pointer-events-none select-none">
-                {isCaptchaSolved ? <span className="text-green-600">Terverifikasi!</span> : "Geser ke kanan untuk verifikasi"}
+              <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold tracking-wide pointer-events-none">
+                {isCaptchaSolved ? (
+                  <span className="text-emerald-700 font-bold flex items-center gap-1.5">
+                    ✓ Terverifikasi!
+                  </span>
+                ) : (
+                  <span className="text-gray-500">Geser ke kanan untuk verifikasi →</span>
+                )}
               </div>
 
-              <div
-                ref={sliderRef}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleMouseDown}
-                className={`absolute top-1 bottom-1 w-10 rounded shadow flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform duration-100 ease-out z-10 ${isCaptchaSolved ? 'bg-green-500 text-white' : 'bg-white text-gray-600 border border-gray-200'}`}
-                style={{ left: `calc(${sliderPosition}% - ${sliderPosition === 100 ? 40 : 0}px)`, marginLeft: sliderPosition === 100 ? 0 : '4px' }}
-              >
-                <ArrowRight size={16} />
-              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={sliderPosition}
+                disabled={isCaptchaSolved}
+                onChange={handleSliderChange}
+                onMouseUp={handleSliderRelease}
+                onTouchEnd={handleSliderRelease}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-default z-20"
+              />
+
+              {!isCaptchaSolved && (
+                <div
+                  className="absolute top-1 bottom-1 w-10 bg-white rounded-lg shadow-md flex items-center justify-center text-teal-600 border border-gray-200 pointer-events-none transition-all duration-75"
+                  style={{ left: `calc(${sliderPosition}% - ${(sliderPosition / 100) * 40}px)` }}
+                >
+                  <ArrowRight size={18} />
+                </div>
+              )}
             </div>
           </div>
 
