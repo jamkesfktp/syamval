@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { TabKey } from '../types';
 import TabNavigation from './TabNavigation';
-import { Menu, X, Printer, Hospital, Upload, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Menu, X, Printer, Upload, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { useRef } from 'react';
 import exportPptx from '../utils/exportPptx';
 // import { exportDocx } from '../utils/exportDocx'; // Will implement soon
@@ -54,17 +54,34 @@ export default function Layout({ activeTab, onTabChange, reportPeriod, onFileUpl
         } ${sidebarCollapsed ? 'lg:w-[80px] w-[280px]' : 'w-[280px]'}`}
       >
         {/* Sidebar Header */}
-        <div className={`flex items-center px-5 py-5 border-b border-gray-100 ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className={`flex items-center px-4 py-4 border-b border-gray-100 ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!sidebarCollapsed ? (
-            <div className="flex flex-col gap-1 w-full">
-              <img src="/logo-rsud.png" alt="Logo RSUD R. Syamsudin" className="h-10 object-contain self-start" onError={(e) => e.currentTarget.style.display='none'} />
-              <div>
-                <p className="text-[10px] text-teal-600 font-bold tracking-wider uppercase">Casemix Enterprise</p>
+            <div className="flex flex-col items-center gap-1.5 w-full text-center">
+              <div className="bg-white p-1 rounded-xl shadow-xs border border-gray-100 flex items-center justify-center">
+                <img 
+                  src="/logo-rsud.png" 
+                  alt="Logo RSUD R. Syamsudin" 
+                  className="h-16 w-auto object-contain" 
+                  onError={(e) => e.currentTarget.style.display='none'} 
+                />
+              </div>
+              <div className="text-left w-full mt-1">
+                <p className="text-xs font-black text-teal-950 uppercase tracking-tight leading-tight">
+                  Aplikasi Case Manager Pro
+                </p>
+                <p className="text-[10px] text-teal-700 font-bold uppercase mt-0.5">
+                  UOBK RSUD R. Syamsudin, S.H.
+                </p>
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
-              <Hospital size={24} className="text-teal-600" />
+            <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center p-1 border border-teal-200">
+              <img 
+                src="/logo-rsud.png" 
+                alt="Logo RSUD" 
+                className="h-8 w-auto object-contain" 
+                onError={(e) => e.currentTarget.style.display='none'} 
+              />
             </div>
           )}
           
@@ -80,7 +97,7 @@ export default function Layout({ activeTab, onTabChange, reportPeriod, onFileUpl
         <div className="flex-1 py-4 overflow-y-auto">
           {!sidebarCollapsed && (
             <p className="px-6 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-              Main Dashboard
+              Menu Utama
             </p>
           )}
           <TabNavigation
@@ -123,8 +140,13 @@ export default function Layout({ activeTab, onTabChange, reportPeriod, onFileUpl
             >
               <Menu size={20} />
             </button>
-            <div className="hidden sm:block">
-              <h2 className="font-semibold text-gray-800">Evaluasi Casemix</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-bold text-gray-900 text-sm sm:text-base">
+                Aplikasi Case Manager Pro
+              </h2>
+              <span className="hidden md:inline-block text-[11px] font-semibold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                UOBK RSUD R. Syamsudin, S.H.
+              </span>
             </div>
           </div>
           

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Hospital, LogIn, ArrowRight } from 'lucide-react';
+import { LogIn, ArrowRight } from 'lucide-react';
 
 interface LoginProps {
   onLoginSuccess: () => void;
@@ -53,16 +53,23 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
       
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl relative z-10 border border-gray-100">
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 bg-teal-600 rounded-xl flex items-center justify-center shadow-lg mb-4">
-            <Hospital className="text-white" size={32} />
+        <div className="flex flex-col items-center text-center">
+          <div className="bg-white p-2 rounded-2xl shadow-md border border-gray-100 mb-3 flex items-center justify-center">
+            <img 
+              src="/logo-rsud.png" 
+              alt="Logo RSUD R. Syamsudin" 
+              className="h-24 sm:h-28 w-auto object-contain" 
+              onError={(e) => e.currentTarget.style.display = 'none'} 
+            />
           </div>
-          <img src="/logo-rsud.png" alt="Logo RSUD R. Syamsudin" className="h-16 object-contain mb-2" onError={(e) => e.currentTarget.style.display = 'none'} />
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            BI Enterprise
+          <h2 className="text-center text-2xl font-black text-gray-900 tracking-tight">
+            Aplikasi Case Manager Pro
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Dashboard Evaluasi Casemix
+          <p className="mt-1 text-center text-sm font-semibold text-teal-700">
+            UOBK RSUD R. Syamsudin, S.H.
+          </p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Sistem Evaluasi Klaim & Asuhan Casemix
           </p>
         </div>
         

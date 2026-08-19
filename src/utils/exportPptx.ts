@@ -12,9 +12,9 @@ export default async function exportPptx(tabName: string) {
     // 1. Create PowerPoint presentation
     const pptx = new pptxgen();
     pptx.layout = 'LAYOUT_16x9';
-    pptx.author = 'RSUD R. Syamsudin, SH';
-    pptx.company = 'Casemix Enterprise';
-    pptx.title = `Laporan Evaluasi Casemix - ${tabName}`;
+    pptx.author = 'UOBK RSUD R. Syamsudin, S.H.';
+    pptx.company = 'Aplikasi Case Manager Pro';
+    pptx.title = `Evaluasi Casemix - ${tabName}`;
 
     // 2. High-resolution canvas capture
     const canvas = await html2canvas(element, {
@@ -44,7 +44,7 @@ export default async function exportPptx(tabName: string) {
     });
 
     // Header text
-    slide.addText(`RSUD R. SYAMSUDIN, S.H. - EVALUASI CASEMIX BPJS`, {
+    slide.addText(`APLIKASI CASE MANAGER PRO - UOBK RSUD R. SYAMSUDIN, S.H.`, {
       x: 0.5,
       y: 0.15,
       w: 8.5,
@@ -55,7 +55,7 @@ export default async function exportPptx(tabName: string) {
       bold: true,
     });
 
-    slide.addText(`RUMAH SAKIT UMUM DAERAH KOTA SUKABUMI`, {
+    slide.addText(`SISTEM EVALUASI KLAIM CASEMIX & SUPERVISI ASUHAN KLINIS`, {
       x: 0.5,
       y: 0.45,
       w: 8.5,

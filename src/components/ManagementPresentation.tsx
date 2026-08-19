@@ -37,9 +37,15 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
 
   const { summary, coder_metrics, cm_metrics, room_metrics, issue_metrics } = data;
 
-  const activeCoders = coder_metrics.filter((c) => (c.total_claims ?? 0) > 0);
+  const activeCoders = [...coder_metrics]
+    .filter((c) => (c.total_claims ?? 0) > 0)
+    .sort((a, b) => (a.avg_delay_days ?? 0) - (b.avg_delay_days ?? 0));
+
   const activeRooms = room_metrics.filter((r) => (r.total_coded ?? 0) > 0);
-  const activeCms = cm_metrics.filter((cm) => (cm.total_coded ?? 0) > 0);
+
+  const activeCms = [...cm_metrics]
+    .filter((cm) => (cm.total_coded ?? 0) > 0 || (cm.total_all ?? 0) > 0)
+    .sort((a, b) => (a.avg_delay_days ?? 0) - (b.avg_delay_days ?? 0));
 
   // Top 5 Bottlenecks
   const slowestRooms = [...activeRooms]
@@ -96,13 +102,13 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-teal-950">Slide Presentasi Eksekutif (RSUD R. Syamsudin, S.H.)</h2>
+              <h2 className="text-base font-bold text-teal-950">Aplikasi Case Manager Pro (UOBK RSUD R. Syamsudin, S.H.)</h2>
               <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 bg-teal-100 text-teal-900 rounded-full border border-teal-300">
                 Resmi
               </span>
             </div>
             <p className="text-xs text-gray-500">
-              Tampilan putih bersih & elegan berstandar presentasi manajemen. Navigasi: ◄ ► / Spasi / Tekan 'F' untuk Fullscreen.
+              Slide Eksekutif Manajemen. Navigasi: ◄ ► / Spasi / Tekan 'F' untuk Fullscreen.
             </p>
           </div>
         </div>
@@ -171,11 +177,11 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
         {/* Slide Header Banner with Logo & Clean Hospital Accents */}
         <div className={`flex items-center justify-between pb-4 mb-4 border-b ${isEmerald ? 'border-teal-700' : 'border-teal-100'}`}>
           <div className="flex items-center gap-4">
-            <div className="bg-white p-1 rounded-xl shadow-sm border border-teal-200 flex items-center justify-center shrink-0">
+            <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-teal-200 flex items-center justify-center shrink-0">
               <img
                 src="/logo-rsud.png"
-                alt="RSUD R. Syamsudin, SH"
-                className="h-11 w-auto object-contain"
+                alt="Logo RSUD R. Syamsudin"
+                className="h-16 sm:h-20 w-auto object-contain"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -183,15 +189,15 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className={`text-base font-black tracking-wide uppercase ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
-                  RSUD R. SYAMSUDIN, S.H.
+                <h1 className={`text-lg font-black tracking-wide uppercase ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
+                  UOBK RSUD R. SYAMSUDIN, S.H.
                 </h1>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-100 text-teal-800 uppercase tracking-wider">
                   KOTA SUKABUMI
                 </span>
               </div>
               <p className={`text-xs font-semibold ${isEmerald ? 'text-amber-300' : 'text-teal-700'}`}>
-                SISTEM INFORMASI & EVALUASI CASEMIX KLAIM BPJS KESEHATAN
+                APLIKASI CASE MANAGER PRO • EVALUASI KLAIM BPJS KESEHATAN
               </p>
             </div>
           </div>
@@ -381,68 +387,64 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
                     Slide 3: Evaluasi Case Manager
                   </span>
                   <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
-                    Kinerja Pengawasan & Respon Dokter Case Manager
+                    Kecepatan Respon & Maksimal Hari Tunggu Dokter Case Manager
                   </h2>
                 </div>
                 <p className={`text-xs max-w-sm text-right ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
-                  Monitoring efektivitas follow-up berkas kendala asuhan klinis di ruangan.
+                  Rata-rata dan maksimal waktu penyelesaian (Lead Time Hari) per dokter Case Manager.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className={`p-4 rounded-2xl border ${
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
+                <div className={`lg:col-span-2 p-4 rounded-2xl border h-80 ${
                   isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
                 }`}>
-                  <p className={`text-xs font-bold mb-3 ${isEmerald ? 'text-amber-300' : 'text-slate-800'}`}>
-                    Tingkat Penyelesaian Klaim per Dokter CM (%)
+                  <p className={`text-xs font-bold mb-2 ${isEmerald ? 'text-amber-300' : 'text-slate-800'}`}>
+                    Rata-rata & Maksimal Hari Tunggu per Case Manager (Hari)
                   </p>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={activeCms.map((cm) => ({
-                          name: cm.name.replace('Dr. ', ''),
-                          'Selesai (%)': Number(cm.completion_rate.toFixed(1)),
-                          'Akurasi (%)': Number(cm.accuracy.toFixed(1)),
-                        }))}
-                        margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke={isEmerald ? '#065f46' : '#e2e8f0'} />
-                        <XAxis dataKey="name" tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} angle={-20} textAnchor="end" />
-                        <YAxis tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ backgroundColor: isEmerald ? '#022c22' : '#ffffff', borderColor: '#0d9488', color: isEmerald ? '#fff' : '#000', borderRadius: '10px' }} />
-                        <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        <Bar dataKey="Selesai (%)" fill="#0d9488" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Akurasi (%)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <ResponsiveContainer width="100%" height="90%">
+                    <BarChart
+                      data={activeCms.map((cm) => ({
+                        name: cm.name.replace('Dr. ', '').replace('Dr.', ''),
+                        'Rata-rata (Hari)': Number((cm.avg_delay_days ?? 0).toFixed(1)),
+                        'Max (Hari)': Number((cm.max_delay_days ?? 0).toFixed(1)),
+                      }))}
+                      margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke={isEmerald ? '#065f46' : '#e2e8f0'} />
+                      <XAxis dataKey="name" tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} angle={-20} textAnchor="end" />
+                      <YAxis tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} />
+                      <Tooltip contentStyle={{ backgroundColor: isEmerald ? '#022c22' : '#ffffff', borderColor: '#0d9488', color: isEmerald ? '#fff' : '#000', borderRadius: '10px' }} />
+                      <Legend wrapperStyle={{ fontSize: '11px' }} />
+                      <Bar dataKey="Rata-rata (Hari)" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Max (Hari)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
 
-                <div className={`p-4 rounded-2xl border flex flex-col justify-between ${
-                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
-                }`}>
-                  <div>
-                    <p className={`text-xs font-bold mb-3 ${isEmerald ? 'text-amber-300' : 'text-slate-800'}`}>
-                      Distribusi Beban Supervisi Ruangan
+                <div className="space-y-3">
+                  <div className={`p-4 rounded-2xl border ${
+                    isEmerald ? 'bg-emerald-900/60 border-teal-700' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <p className="text-xs text-teal-600 font-bold uppercase tracking-wider">⚡ Case Manager Tercepat</p>
+                    <p className={`text-lg font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
+                      {activeCms[0]?.name || '-'}
                     </p>
-                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                      {activeCms.map((cm, idx) => (
-                        <div key={idx} className={`flex items-center justify-between p-2.5 rounded-xl border text-xs ${
-                          isEmerald ? 'bg-emerald-950/60 border-emerald-800' : 'bg-white border-slate-200'
-                        }`}>
-                          <div>
-                            <p className={`font-bold ${isEmerald ? 'text-white' : 'text-slate-900'}`}>{cm.name}</p>
-                            <p className={`text-[11px] truncate max-w-[220px] ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
-                              {cm.rooms.join(', ')}
-                            </p>
-                          </div>
-                          <div className="text-right font-mono">
-                            <span className="text-teal-600 font-bold">{cm.total_coded} Coded</span>
-                            <p className={`text-[10px] ${isEmerald ? 'text-emerald-200/60' : 'text-slate-400'}`}>{cm.completion_rate.toFixed(1)}% Rate</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <p className={`text-xs font-mono mt-0.5 ${isEmerald ? 'text-emerald-200' : 'text-slate-500'}`}>
+                      Rata-rata: {activeCms[0]?.avg_delay_days?.toFixed(1)} Hari • Max: {activeCms[0]?.max_delay_days} Hari
+                    </p>
+                  </div>
+
+                  <div className={`p-4 rounded-2xl border ${
+                    isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <p className="text-xs text-amber-500 font-bold uppercase tracking-wider">📊 Rata-rata Tim Case Manager</p>
+                    <p className={`text-2xl font-black mt-1 font-mono ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
+                      {(activeCms.reduce((acc, c) => acc + (c.avg_delay_days ?? 0), 0) / (activeCms.length || 1)).toFixed(1)} Hari
+                    </p>
+                    <p className={`text-xs mt-0.5 ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
+                      Seluruh berkas disupervisi dalam batas wajar
+                    </p>
                   </div>
                 </div>
               </div>
@@ -662,7 +664,7 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
         }`}>
           <p className="flex items-center gap-1 font-medium">
             <Sparkles size={14} className="text-teal-600" />
-            RSUD R. Syamsudin, S.H. Kota Sukabumi • Casemix Business Intelligence
+            Aplikasi Case Manager Pro • UOBK RSUD R. Syamsudin, S.H. Kota Sukabumi
           </p>
           <div className="flex items-center gap-1.5">
             {Array.from({ length: totalSlides }).map((_, idx) => (
