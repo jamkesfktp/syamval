@@ -61,18 +61,32 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
 
   const issueMap = new Map<string, number>();
 
+  const getRoomMapping = (roomName: string) => {
+    if (!roomName) return null;
+    const upper = roomName.trim().toUpperCase();
+    if (mapping[upper]) return mapping[upper];
+
+    // Try finding exact match with cleaned string
+    for (const key of Object.keys(mapping)) {
+      if (upper === key || upper.includes(key) || key.includes(upper)) {
+        return mapping[key];
+      }
+    }
+
+    return null;
+  };
+
   rawData.forEach(row => {
     const isCoded = !!row['Coding ICD'];
     const hasIssue = !!row['Catatan Casemix'];
     const catatan = String(row['Catatan Casemix'] || '').trim();
-    const cost = parseCost(row['Realcost']);
+    const cost = Math.ceil(parseCost(row['Realcost']));
     const roomName = String(row['Poli/Ruangan'] || 'Unknown').trim();
     const dokterName = String(row['Dokter'] || 'Unknown').trim();
     
     // Track issues
     if (hasIssue && catatan !== 'null' && catatan !== 'undefined') {
       const lowerIssue = catatan.toLowerCase();
-      // Very basic keyword grouping for issues
       let category = 'Lain-lain';
       if (lowerIssue.includes('pa')) category = 'Menunggu Hasil PA';
       else if (lowerIssue.includes('resume')) category = 'Kelengkapan Resume Medis';
@@ -86,22 +100,34 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
       issueMap.set(category, (issueMap.get(category) || 0) + 1);
     }
 
-    // Base mappings from roomMapping.json
-    const rMap = mapping[roomName.toUpperCase()];
-    const smf = rMap ? rMap.smf : 'UMUM';
-    const cmName = rMap ? rMap.cm : 'Unknown CM';
-    const picName = rMap ? rMap.pic : 'Unknown PIC';
-    // Let's still use the Coder from Excel if it's there, but if empty, use mapping
+    // Exact user mapping
+    const rMap = getRoomMapping(roomName);
+    const smf = rMap ? rMap.smf : 'Umum';
+    const cmName = rMap ? rMap.cm : 'Dr. Case Manager';
+    const picName = rMap ? rMap.pic : 'PIC Terkait';
+    
+    // Coder from Excel, fallback to room mapping
     let coderName = String(row['Nama Coder'] || '').trim();
     if (!coderName && rMap) {
       coderName = rMap.coder;
     }
-    if (!coderName) coderName = 'Unknown';
+    if (!coderName) coderName = 'Koder';
     
     let delay = 0;
     if (isCoded && row['Tanggal Keluar'] && row['Tanggal input Coding']) {
       delay = calculateDelay(row['Tanggal Keluar'], row['Tanggal input Coding']);
     }
+
+    // Enrich rawData row for instant drilldown
+    row._coder = coderName;
+    row._cm = cmName;
+    row._smf = smf;
+    row._pic = picName;
+    row._room = roomName;
+    row._isCoded = isCoded;
+    row._hasIssue = hasIssue;
+    row._delayHours = delay;
+    row._cost = cost;
 
     if (isCoded) {
       totalCoded++;
@@ -258,6 +284,7 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     room_metrics,
     smf_distribution: Object.fromEntries(smfMap),
     issue_metrics,
-    claims_coded_sample: rawData.slice(0, 10)
+    claims_coded_sample: rawData.slice(0, 10),
+    raw_claims: rawData
   };
 }

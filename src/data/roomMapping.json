@@ -1,182 +1,37 @@
 {
-  "H.M. MURAZ LT 4.NS.2": {
-    "smf": "Penyakit Dalam",
-    "coder": "Salma",
-    "cm": "Dr. Ni Made",
-    "pic": "RISNA"
-  },
-  "H.M. MURAZ LT.4.NS.3": {
-    "smf": "Penyakit Dalam",
-    "coder": "Salma",
-    "cm": "Dr. Ni Made",
-    "pic": "RISNA"
-  },
-  "ASTER": {
-    "smf": "Bedah",
-    "coder": "Arsy",
-    "cm": "Dr. Andre",
-    "pic": "RATIH"
-  },
-  "TERATAI ATAS": {
-    "smf": "Bedah",
-    "coder": "Arsy",
-    "cm": "Dr. Andre",
-    "pic": "RATIH"
-  },
-  "TERATAI BAWAH NS.1": {
-    "smf": "Bedah",
-    "coder": "Arsy",
-    "cm": "Dr. Andre",
-    "pic": "RATIH"
-  },
-  "TERATAI BAWAH NS.2": {
-    "smf": "Bedah",
-    "coder": "Arsy",
-    "cm": "Dr. Andre",
-    "pic": "RATIH"
-  },
-  "ANGGREK ATAS": {
-    "smf": "Penyakit Dalam",
-    "coder": "Nadif",
-    "cm": "Dr. Athena",
-    "pic": "RAHMA"
-  },
-  "ANGGREK BAWAH": {
-    "smf": "Penyakit Dalam",
-    "coder": "Nadif",
-    "cm": "Dr. Athena",
-    "pic": "RAHMA"
-  },
-  "CEMPAKA TB-RO": {
-    "smf": "Paru",
-    "coder": "Nadif",
-    "cm": "Dr. Athena",
-    "pic": "RAHMA"
-  },
-  "FLAMBOYAN": {
-    "smf": "Saraf",
-    "coder": "Nadif",
-    "cm": "Dr. Athena",
-    "pic": "RISNA"
-  },
-  "FX SOEDARSONO": {
-    "smf": "Paru",
-    "coder": "Nadif",
-    "cm": "Dr. Athena",
-    "pic": "RAHMA"
-  },
-  "KEMUNING": {
-    "smf": "Jiwa",
-    "coder": "Nuroh",
-    "cm": "Dr. Andre",
-    "pic": "DEBY"
-  },
-  "INSTALASI LUKA BAKAR": {
-    "smf": "Bedah",
-    "coder": "Nuroh",
-    "cm": "Dr. Ayu",
-    "pic": "RATIH"
-  },
-  "KACAPIRING 1": {
-    "smf": "Penyakit Dalam",
-    "coder": "Salma",
-    "cm": "Dr. Ayu",
-    "pic": "RAHMA"
-  },
-  "MAWAR": {
-    "smf": "Penyakit Dalam",
-    "coder": "Nuroh",
-    "cm": "Dr. Ayu",
-    "pic": "DEBY"
-  },
-  "MELATI": {
-    "smf": "Obgyn",
-    "coder": "Nuroh",
-    "cm": "Dr. Rika",
-    "pic": "RATIH"
-  },
-  "NEONATUS LEVEL 1": {
-    "smf": "Bayi",
-    "coder": "Aisyah",
-    "cm": "Dr. Rika",
-    "pic": "RISNA"
-  },
-  "ANYELIR LANTAI 2": {
-    "smf": "Jantung",
-    "coder": "Arul",
-    "cm": "Dr. Manda",
-    "pic": "DEBY"
-  },
-  "ANYELIR LANTAI 3": {
-    "smf": "Penyakit Dalam, Saraf, Jantung",
-    "coder": "Arul",
-    "cm": "Dr. Manda",
-    "pic": "DEBY"
-  },
-  "ICCU": {
-    "smf": "Intensif",
-    "coder": "Arul",
-    "cm": "Dr. Manda",
-    "pic": "RAHMA"
-  },
-  "GICU": {
-    "smf": "Intensif",
-    "coder": "Aisyah",
-    "cm": "Dr. Ayu",
-    "pic": "RAHMA"
-  },
-  "FAMILY ATAS HCU": {
-    "smf": "Bayi",
-    "coder": "Aisyah",
-    "cm": "Dr.Rika",
-    "pic": "RAHMA"
-  },
-  "H.M. MURAZ LT 3": {
-    "smf": "Anak",
-    "coder": "Aisyah",
-    "cm": "Dr.Rika",
-    "pic": "RISNA"
-  },
-  "NICU": {
-    "smf": "Intensif",
-    "coder": "Aisyah",
-    "cm": "Dr.Rika",
-    "pic": "RAHMA"
-  },
-  "PICU": {
-    "smf": "Intensif",
-    "coder": "Aisyah",
-    "cm": "Dr.Rika",
-    "pic": "RAHMA"
-  },
-  "PAVILIUN SERUNI ATAS": {
-    "smf": "VIP",
-    "coder": "Gilang, Chae",
-    "cm": "Dr. Ni Made",
-    "pic": "RATIH"
-  },
-  "PAVILIUN SERUNI BAWAH": {
-    "smf": "VIP",
-    "coder": "Gilang, Chae",
-    "cm": "Dr. Ni Made",
-    "pic": "RATIH"
-  },
-  "IW IGD": {
-    "smf": "zona bebas",
-    "coder": "Gilang, Chae",
-    "cm": "Dr. Wiwi",
-    "pic": "RAHMA"
-  },
-  "IW KEBIDANAN": {
-    "smf": "obgyn",
-    "coder": "Gilang, Chae",
-    "cm": "Dr. Wiwi",
-    "pic": "RAHMA"
-  },
-  "H.M. MURAZ LT 2": {
-    "smf": "tim kemo",
-    "coder": "Gilang, Chae",
-    "cm": "tim Kemo",
-    "pic": "RISNA"
-  }
+  "H.M. MURAZ LT 4.NS.2": { "smf": "Penyakit Dalam", "coder": "Salma", "supervisor": "Dr. Lila", "cm": "Dr. Ni Made", "pic": "RISNA" },
+  "H.M. MURAZ LT.4.NS.3": { "smf": "Penyakit Dalam", "coder": "Salma", "supervisor": "Dr. Lila", "cm": "Dr. Ni Made", "pic": "RISNA" },
+  "H.M. MURAZ LT 4": { "smf": "Penyakit Dalam", "coder": "Salma", "supervisor": "Dr. Lila", "cm": "Dr. Ni Made", "pic": "RISNA" },
+  "ASTER": { "smf": "Bedah", "coder": "Arsy", "supervisor": "Nita", "cm": "Dr. Andre", "pic": "RATIH" },
+  "TERATAI ATAS": { "smf": "Bedah", "coder": "Arsy", "supervisor": "Nita", "cm": "Dr. Andre", "pic": "RATIH" },
+  "TERATAI BAWAH NS.1": { "smf": "Bedah", "coder": "Arsy", "supervisor": "Nita", "cm": "Dr. Andre", "pic": "RATIH" },
+  "TERATAI BAWAH NS.2": { "smf": "Bedah", "coder": "Arsy", "supervisor": "Nita", "cm": "Dr. Andre", "pic": "RATIH" },
+  "TERATAI BAWAH": { "smf": "Bedah", "coder": "Arsy", "supervisor": "Nita", "cm": "Dr. Andre", "pic": "RATIH" },
+  "ANGGREK ATAS": { "smf": "Penyakit Dalam", "coder": "Nadif", "supervisor": "Gilang", "cm": "Dr. Athena", "pic": "RAHMA" },
+  "ANGGREK BAWAH": { "smf": "Penyakit Dalam", "coder": "Nadif", "supervisor": "Gilang", "cm": "Dr. Athena", "pic": "RAHMA" },
+  "CEMPAKA TB-RO": { "smf": "Paru", "coder": "Nadif", "supervisor": "Gilang", "cm": "Dr. Athena", "pic": "RAHMA" },
+  "FLAMBOYAN": { "smf": "Saraf", "coder": "Nadif", "supervisor": "Gilang", "cm": "Dr. Athena", "pic": "RISNA" },
+  "FX SOEDARSONO": { "smf": "Paru", "coder": "Nadif", "supervisor": "Gilang", "cm": "Dr. Athena", "pic": "RAHMA" },
+  "KEMUNING": { "smf": "Jiwa", "coder": "Nuroh", "supervisor": "Gilang", "cm": "Dr. Andre", "pic": "DEBY" },
+  "INSTALASI LUKA BAKAR": { "smf": "Bedah", "coder": "Nuroh", "supervisor": "Gilang", "cm": "Dr. Ayu", "pic": "RATIH" },
+  "KACAPIRING 1": { "smf": "Penyakit Dalam", "coder": "Salma", "supervisor": "Gilang", "cm": "Dr. Ayu", "pic": "RAHMA" },
+  "MAWAR": { "smf": "Penyakit Dalam", "coder": "Nuroh", "supervisor": "Gilang", "cm": "Dr. Ayu", "pic": "DEBY" },
+  "MELATI": { "smf": "Obgyn", "coder": "Nuroh", "supervisor": "Gilang", "cm": "Dr. Rika", "pic": "RATIH" },
+  "NEONATUS LEVEL 1": { "smf": "Bayi", "coder": "Aisyah", "supervisor": "Gilang", "cm": "Dr. Rika", "pic": "RISNA" },
+  "ANYELIR LANTAI 2": { "smf": "Jantung", "coder": "Arul", "supervisor": "Dr. Ulfani", "cm": "Dr. Manda", "pic": "DEBY" },
+  "ANYELIR LANTAI 3": { "smf": "Penyakit Dalam, Saraf, Jantung", "coder": "Arul", "supervisor": "Dr. Ulfani", "cm": "Dr. Manda", "pic": "DEBY" },
+  "ICCU": { "smf": "Intensif", "coder": "Arul", "supervisor": "Dr. Ulfani", "cm": "Dr. Manda", "pic": "RAHMA" },
+  "GICU": { "smf": "Intensif", "coder": "Aisyah", "supervisor": "Nita", "cm": "Dr. Ayu", "pic": "RAHMA" },
+  "FAMILY ATAS HCU": { "smf": "Bayi", "coder": "Aisyah", "supervisor": "Nita", "cm": "Dr.Rika", "pic": "RAHMA" },
+  "H.M. MURAZ LT 3": { "smf": "Anak", "coder": "Aisyah", "supervisor": "Nita", "cm": "Dr.Rika", "pic": "RISNA" },
+  "NICU": { "smf": "Intensif", "coder": "Aisyah", "supervisor": "Nita", "cm": "Dr.Rika", "pic": "RAHMA" },
+  "PICU": { "smf": "Intensif", "coder": "Aisyah", "supervisor": "Nita", "cm": "Dr.Rika", "pic": "RAHMA" },
+  "PAVILIUN SERUNI ATAS": { "smf": "VIP", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Ni Made", "pic": "RATIH" },
+  "PAVILIUN SERUNI BAWAH": { "smf": "VIP", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Ni Made", "pic": "RATIH" },
+  "PAVILIUN SERUNI VK": { "smf": "VIP", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Ni Made", "pic": "RATIH" },
+  "IW IGD": { "smf": "zona bebas", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Wiwi", "pic": "RAHMA" },
+  "INTERMEDIATE WARD": { "smf": "zona bebas", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Wiwi", "pic": "RAHMA" },
+  "IW KEBIDANAN": { "smf": "obgyn", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Wiwi", "pic": "RAHMA" },
+  "INTERMEDIATE WARD KEBIDANAN": { "smf": "obgyn", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "Dr. Wiwi", "pic": "RAHMA" },
+  "H.M. MURAZ LT 2": { "smf": "tim kemo", "coder": "Gilang, Chae", "supervisor": "Nita", "cm": "tim Kemo", "pic": "RISNA" }
 }

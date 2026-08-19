@@ -1,4 +1,12 @@
-export type TabKey = 'ringkasan' | 'kinerja-koder' | 'kinerja-cm' | 'distribusi-ruangan' | 'kecepatan-akurasi' | 'bottleneck' | 'kendala';
+export type TabKey =
+  | 'ringkasan'
+  | 'kinerja-koder'
+  | 'kinerja-cm'
+  | 'distribusi-ruangan'
+  | 'kecepatan-koder'
+  | 'kecepatan-cm'
+  | 'bottleneck'
+  | 'kendala';
 
 export interface Summary {
   total_coded: number;
@@ -82,14 +90,15 @@ export interface DashboardData {
   smf_distribution: SmfDistribution;
   issue_metrics: IssueMetric[];
   claims_coded_sample: Record<string, string | number>[];
+  raw_claims?: Record<string, any>[];
 }
 
 export function formatNumber(value: number): string {
-  return value.toLocaleString('id-ID');
+  return Math.ceil(value).toLocaleString('id-ID');
 }
 
 export function formatCurrency(value: number): string {
-  return 'Rp ' + value.toLocaleString('id-ID');
+  return 'Rp ' + Math.ceil(value).toLocaleString('id-ID');
 }
 
 export function getAccuracyColor(accuracy: number): string {

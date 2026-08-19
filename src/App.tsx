@@ -8,8 +8,8 @@ import SmfDistribution from './components/SmfDistribution';
 import CoderPerformance from './components/CoderPerformance';
 import CaseManagerPerformance from './components/CaseManagerPerformance';
 import RoomDistribution from './components/RoomDistribution';
-import SpeedAnalysis from './components/SpeedAnalysis';
-import AccuracyChart from './components/AccuracyChart';
+import CoderSpeedAccuracy from './components/CoderSpeedAccuracy';
+import CaseManagerSpeedAccuracy from './components/CaseManagerSpeedAccuracy';
 import BottleneckAnalysis from './components/BottleneckAnalysis';
 import IssueTracker from './components/IssueTracker';
 import {
@@ -26,13 +26,14 @@ import { formatNumber } from './types';
 import { parseExcelToDashboardData } from './utils/excelParser';
 
 const tabTitles: Record<TabKey, string> = {
-  ringkasan: 'Ringkasan',
+  ringkasan: 'Ringkasan Eksekutif',
   'kinerja-koder': 'Kinerja Koder',
   'kinerja-cm': 'Kinerja Case Manager',
   'distribusi-ruangan': 'Distribusi Ruangan',
-  'kecepatan-akurasi': 'Kecepatan & Akurasi',
-  bottleneck: 'Analisis Bottleneck',
-  kendala: 'Issue Tracker (Kendala)'
+  'kecepatan-koder': 'Kecepatan & Akurasi Koder',
+  'kecepatan-cm': 'Kecepatan & Evaluasi Case Manager',
+  bottleneck: 'Analisis Bottleneck (Top 5)',
+  kendala: 'Issue Tracker (Kendala Casemix)'
 };
 
 export default function App() {
@@ -61,7 +62,6 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'ringkasan': {
-        // Top 5 coders by claims for overview chart
         const topCoders = [...coder_metrics]
           .sort((a, b) => b.total_claims - a.total_claims)
           .slice(0, 5)
@@ -75,8 +75,8 @@ export default function App() {
           <div className="space-y-6">
             <KpiCards summary={summary} />
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-              <h3 className="text-base font-semibold text-gray-800 mb-4">Top 5 Koder (Jumlah Klaim)</h3>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <h3 className="text-sm font-bold text-gray-800 mb-4">Top 5 Koder (Volume Klaim Selesai vs Bermasalah)</h3>
               <div className="h-64 sm:h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={topCoders} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
@@ -85,14 +85,14 @@ export default function App() {
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip
                       contentStyle={{
-                        borderRadius: '8px',
-                        border: '1px solid #e5e7eb',
-                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        borderRadius: '10px',
+                        border: 'none',
+                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
                       }}
                       formatter={(value: any) => formatNumber(Number(value))}
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="Selesai" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Selesai" fill="#0d9488" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Bermasalah" fill="#ef4444" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -113,22 +113,18 @@ export default function App() {
       case 'distribusi-ruangan':
         return <RoomDistribution roomMetrics={room_metrics} />;
 
-      case 'kecepatan-akurasi':
-        return (
-          <div className="space-y-6">
-            <SpeedAnalysis coderMetrics={coder_metrics} />
-            <AccuracyChart
-              coderMetrics={coder_metrics}
-              cmMetrics={cm_metrics}
-              picMetrics={pic_metrics}
-              overallAccuracy={summary.overall_accuracy}
-            />
-          </div>
-        );
+      case 'kecepatan-koder':
+        return <CoderSpeedAccuracy coderMetrics={coder_metrics} rawClaims={data.raw_claims} />;
+
+      case 'kecepatan-cm':
+        return <CaseManagerSpeedAccuracy cmMetrics={cm_metrics} rawClaims={data.raw_claims} />;
+
       case 'bottleneck':
         return <BottleneckAnalysis data={data} />;
+
       case 'kendala':
         return <IssueTracker data={data} />;
+
       default:
         return null;
     }
