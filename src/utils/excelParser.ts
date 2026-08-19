@@ -36,53 +36,51 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     return parseInt(String(costStr).replace(/\./g, ''), 10) || 0;
   };
 
-  const parseToUtcMidnight = (val: any): number | null => {
+  const parseDateToSerialDays = (val: any): number | null => {
     if (!val && val !== 0) return null;
-    
+
+    // 1. If it's already an Excel serial date number
     if (typeof val === 'number') {
-      // When Excel serializes Indonesian DD/MM/YYYY dates under US locale:
-      // parsed.m contains the original Day (1..12)
-      // parsed.d contains the original Month (e.g. 7 for July, 8 for August)
-      const parsed = xlsx.SSF.parse_date_code(val);
-      if (!parsed) return null;
-      
-      let day = parsed.m;
-      let month = parsed.d;
-      let year = parsed.y;
-
-      if (month > 12 && day <= 12) {
-        const temp = day;
-        day = month;
-        month = temp;
-      }
-
-      return Date.UTC(year, month - 1, day, 0, 0, 0, 0);
+      return Math.floor(val);
     }
 
+    // 2. If it's a Date object
+    if (val instanceof Date) {
+      return Math.floor((Date.UTC(val.getUTCFullYear(), val.getUTCMonth(), val.getUTCDate()) / 86400000) + 25569);
+    }
+
+    // 3. If it's a string: DD-MM-YYYY or DD/MM/YYYY or YYYY-MM-DD
     const str = String(val).trim().split(' ')[0];
     const parts = str.split(/[-\/]/);
     if (parts.length === 3) {
+      let year: number, month: number, day: number;
       if (parts[0].length === 4) {
         // YYYY-MM-DD
-        return Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 0, 0, 0, 0);
+        year = Number(parts[0]);
+        month = Number(parts[1]);
+        day = Number(parts[2]);
       } else {
         // DD-MM-YYYY (Indonesian format)
-        return Date.UTC(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]), 0, 0, 0, 0);
+        day = Number(parts[0]);
+        month = Number(parts[1]);
+        year = Number(parts[2]);
       }
+      const utcMs = Date.UTC(year, month - 1, day, 0, 0, 0, 0);
+      return Math.floor(utcMs / 86400000) + 25569;
     }
+
     return null;
   };
 
   const calculateDelayDays = (tglKeluar: any, tglCoding: any): number => {
-    const utcKeluar = parseToUtcMidnight(tglKeluar);
-    const utcCoding = parseToUtcMidnight(tglCoding);
-    if (utcKeluar === null || utcCoding === null) return 0;
+    const serialKeluar = parseDateToSerialDays(tglKeluar);
+    const serialCoding = parseDateToSerialDays(tglCoding);
+    if (serialKeluar === null || serialCoding === null) return 0;
     
     // Waktu penyelesaian = tanggal input coding − tanggal keluar (dibulatkan ke hari penuh)
-    // Tanggal dinormalisasi ke UTC 00:00
     // Jika coding sebelum keluar, dianggap 0 hari
-    const diffDays = Math.round((utcCoding - utcKeluar) / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
+    const diff = serialCoding - serialKeluar;
+    return diff > 0 ? diff : 0;
   };
 
   const issueMap = new Map<string, number>();
@@ -132,9 +130,30 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     const picName = rMap ? rMap.pic : 'PIC Terkait';
     
     // Coder from Excel, fallback to room mapping
-    let coderName = String(row['Nama Coder'] || '').trim();
+    const rawCoder = String(row['Nama Coder'] || '').trim();
+    let coderName = rawCoder;
     if (!coderName && rMap) {
       coderName = rMap.coder;
+    }
+    
+    // Unify and normalize coder identities
+    const upperCoder = coderName.toUpperCase();
+    if (upperCoder.includes('CHAERRANI') || upperCoder.includes('CHAE')) {
+      coderName = 'CHAERRANI DWI TISNA WULANDARI, A.MD.RMIK';
+    } else if (upperCoder.includes('GILANG')) {
+      coderName = 'GILANG CITRA A';
+    } else if (upperCoder.includes('AISAH') || upperCoder.includes('AISYAH')) {
+      coderName = 'AISYAH';
+    } else if (upperCoder.includes('SYAHRUL') || upperCoder.includes('ARUL')) {
+      coderName = 'MUHAMMAD SYAHRUL RAHMAN';
+    } else if (upperCoder.includes('ARSY')) {
+      coderName = 'ARSY ANDRASTEA SARIFUDIN';
+    } else if (upperCoder.includes('NADHIF') || upperCoder.includes('NADIF')) {
+      coderName = 'NADHIF GIBRAN KURNIAWAN';
+    } else if (upperCoder.includes('SALMA')) {
+      coderName = 'SALMA FAKHIRAH RUSJDI';
+    } else if (upperCoder.includes('NUROH')) {
+      coderName = 'NUROH SALIMAH, A.Md.RMIK';
     }
     if (!coderName) coderName = 'Koder';
     
@@ -164,10 +183,25 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
       totalPending++;
     }
 
+    // Short name formatting
+    const getShortName = (name: string): string => {
+      const u = name.toUpperCase();
+      if (u.includes('CHAERRANI') || u.includes('CHAE')) return 'Chaerrani';
+      if (u.includes('GILANG')) return 'Gilang Citra A';
+      if (u.includes('AISYAH') || u.includes('AISAH')) return 'Aisyah';
+      if (u.includes('SYAHRUL')) return 'M. Syahrul R.';
+      if (u.includes('ARSY')) return 'Arsy Andrastea';
+      if (u.includes('NADHIF')) return 'Nadhif Gibran';
+      if (u.includes('SALMA')) return 'Salma Fakhira';
+      if (u.includes('NUROH')) return 'Nuroh Salimah';
+      return name.split(' ').slice(0, 2).join(' ');
+    };
+
     // --- CODER ---
     if (!coderMap.has(coderName)) {
       coderMap.set(coderName, {
-        name: coderName, short_name: coderName.split(' ').slice(0,2).join(' '),
+        name: coderName,
+        short_name: getShortName(coderName),
         total_claims: 0, with_issues: 0, with_cm_notes: 0, 
         total_delay: 0, max_delay: 0, total_realcost: 0
       });
