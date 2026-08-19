@@ -7,16 +7,15 @@ import {
   Minimize2,
   ChevronLeft,
   ChevronRight,
-  TrendingUp,
-  Clock,
   AlertTriangle,
   CheckCircle,
-  FileSpreadsheet,
   Award,
   Building2,
   Stethoscope,
   Sparkles,
-  Download
+  Download,
+  Sun,
+  Moon
 } from 'lucide-react';
 import exportPptx from '../utils/exportPptx';
 import {
@@ -27,15 +26,13 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
   Legend
 } from 'recharts';
 
 export default function ManagementPresentation({ data }: { data: DashboardData }) {
   const [currentSlide, setCurrentSlide] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [theme, setTheme] = useState<'syamsudin-white' | 'syamsudin-emerald'>('syamsudin-white');
   const totalSlides = 6;
 
   const { summary, coder_metrics, cm_metrics, room_metrics, issue_metrics } = data;
@@ -84,34 +81,49 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
   };
 
   const handleExport = () => {
-    exportPptx(`Slide_${currentSlide}_Presentasi_Manajemen`);
+    exportPptx(`Slide_${currentSlide}_RSUD_Syamsudin`);
   };
 
-  const COLORS = ['#0d9488', '#0284c7', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+  const isEmerald = theme === 'syamsudin-emerald';
 
   return (
     <div className="space-y-4">
-      {/* Presentation Control Bar */}
-      <div className="bg-white px-6 py-4 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap items-center justify-between gap-4">
+      {/* Top Presentation Control Bar */}
+      <div className="bg-white px-6 py-4 rounded-2xl shadow-sm border border-emerald-100 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
+          <div className="w-11 h-11 rounded-xl bg-teal-600 text-amber-300 flex items-center justify-center font-bold shadow-md shadow-teal-700/20 border border-amber-400/40">
             <Presentation size={22} />
           </div>
           <div>
-            <h2 className="text-base font-bold text-gray-900">Mode Presentasi Eksekutif (Slide Deck)</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-teal-950">Slide Presentasi Eksekutif (RSUD R. Syamsudin, S.H.)</h2>
+              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 bg-teal-100 text-teal-900 rounded-full border border-teal-300">
+                Resmi
+              </span>
+            </div>
             <p className="text-xs text-gray-500">
-              Gunakan tombol panah ◄ ► atau Spasi untuk berpindah slide. Tekan 'F' untuk Fullscreen.
+              Tampilan putih bersih & elegan berstandar presentasi manajemen. Navigasi: ◄ ► / Spasi / Tekan 'F' untuk Fullscreen.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={() => setTheme(isEmerald ? 'syamsudin-white' : 'syamsudin-emerald')}
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-colors"
+            title="Ganti Tema Slide"
+          >
+            {isEmerald ? <Sun size={15} className="text-amber-500" /> : <Moon size={15} className="text-teal-700" />}
+            <span>{isEmerald ? 'Tema Putih Bersih' : 'Tema Hijau Gelap'}</span>
+          </button>
+
           {/* Slide Indicator */}
-          <div className="flex items-center bg-gray-100 rounded-xl p-1 text-xs font-bold text-gray-700">
+          <div className="flex items-center bg-teal-50 border border-teal-200 rounded-xl p-1 text-xs font-bold text-teal-900">
             <button
               onClick={() => setCurrentSlide((p) => Math.max(p - 1, 1))}
               disabled={currentSlide === 1}
-              className="p-2 rounded-lg hover:bg-white disabled:opacity-30 transition-all text-gray-700"
+              className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 transition-all text-teal-900"
               title="Slide Sebelumnya"
             >
               <ChevronLeft size={16} />
@@ -122,7 +134,7 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
             <button
               onClick={() => setCurrentSlide((p) => Math.min(p + 1, totalSlides))}
               disabled={currentSlide === totalSlides}
-              className="p-2 rounded-lg hover:bg-white disabled:opacity-30 transition-all text-gray-700"
+              className="p-1.5 rounded-lg hover:bg-white disabled:opacity-30 transition-all text-teal-900"
               title="Slide Selanjutnya"
             >
               <ChevronRight size={16} />
@@ -131,51 +143,67 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
 
           <button
             onClick={toggleFullscreen}
-            className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-black transition-colors"
+            className="flex items-center gap-2 bg-teal-900 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-black transition-colors shadow-sm"
           >
-            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
             {isFullscreen ? 'Keluar Fullscreen' : 'Layar Penuh (F11)'}
           </button>
 
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-teal-700 transition-colors shadow-sm"
+            className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-teal-700 transition-all shadow-md shadow-teal-700/20"
           >
-            <Download size={16} />
-            Ekspor Slide Ini (.pptx)
+            <Download size={15} />
+            Download PPTX
           </button>
         </div>
       </div>
 
-      {/* Main 16:9 Presentation Canvas */}
+      {/* Main 16:9 Presentation Canvas Styled with Clean White Identity */}
       <div
         id="presentation-container"
-        className={`bg-slate-900 text-slate-100 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between border border-slate-800 transition-all ${
-          isFullscreen ? 'w-screen h-screen p-8' : 'w-full min-h-[640px] p-6 sm:p-8'
-        }`}
+        className={`rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between transition-all border ${
+          isEmerald
+            ? 'bg-gradient-to-br from-[#032e2b] via-[#064e3b] to-[#022c22] text-white border-teal-700 shadow-teal-950/60'
+            : 'bg-white text-slate-800 border-slate-200 shadow-slate-200'
+        } ${isFullscreen ? 'w-screen h-screen p-8' : 'w-full min-h-[640px] p-6 sm:p-8'}`}
       >
-        {/* Slide Header Banner */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo-rsud.png"
-              alt="RSUD R. Syamsudin, SH"
-              className="h-10 w-auto bg-white/95 p-1 rounded-lg"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
+        {/* Slide Header Banner with Logo & Clean Hospital Accents */}
+        <div className={`flex items-center justify-between pb-4 mb-4 border-b ${isEmerald ? 'border-teal-700' : 'border-teal-100'}`}>
+          <div className="flex items-center gap-4">
+            <div className="bg-white p-1 rounded-xl shadow-sm border border-teal-200 flex items-center justify-center shrink-0">
+              <img
+                src="/logo-rsud.png"
+                alt="RSUD R. Syamsudin, SH"
+                className="h-11 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
             <div>
-              <h1 className="text-sm font-extrabold tracking-wider text-teal-400 uppercase">
-                RSUD R. SYAMSUDIN, SH - CASEMIX BUSINESS INTELLIGENCE
-              </h1>
-              <p className="text-xs text-slate-400">Laporan Evaluasi & Rekomendasi Manajemen Klaim JKN</p>
+              <div className="flex items-center gap-2">
+                <h1 className={`text-base font-black tracking-wide uppercase ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
+                  RSUD R. SYAMSUDIN, S.H.
+                </h1>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-100 text-teal-800 uppercase tracking-wider">
+                  KOTA SUKABUMI
+                </span>
+              </div>
+              <p className={`text-xs font-semibold ${isEmerald ? 'text-amber-300' : 'text-teal-700'}`}>
+                SISTEM INFORMASI & EVALUASI CASEMIX KLAIM BPJS KESEHATAN
+              </p>
             </div>
           </div>
+
           <div className="text-right">
-            <span className="text-xs font-bold px-3 py-1 bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">
-              Periode: {summary.report_period}
-            </span>
+            <div className={`text-xs font-bold px-3.5 py-1.5 rounded-full border shadow-sm ${
+              isEmerald 
+                ? 'bg-emerald-900/80 text-amber-300 border-emerald-700' 
+                : 'bg-teal-50 text-teal-900 border-teal-200'
+            }`}>
+              📅 Periode: {summary.report_period}
+            </div>
           </div>
         </div>
 
@@ -185,70 +213,82 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
           {currentSlide === 1 && (
             <div className="space-y-6">
               <div className="text-center max-w-2xl mx-auto">
-                <span className="text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-950/60 px-3 py-1 rounded-full border border-teal-800">
+                <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                  isEmerald ? 'bg-amber-400/10 text-amber-300 border-amber-400/30' : 'bg-teal-50 text-teal-800 border-teal-200'
+                }`}>
                   Slide 1: Ringkasan Eksekutif
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-white mt-2">
+                <h2 className={`text-2xl sm:text-3xl font-black mt-2 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                   Kinerja & Tata Kelola Klaim Pasien Rawat Inap
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Monitoring menyeluruh volume klaim yang telah dikoding, berkas pending, tingkat akurasi, dan nilai realcost klaim.
+                <p className={`text-xs sm:text-sm mt-1 ${isEmerald ? 'text-emerald-100/70' : 'text-slate-500'}`}>
+                  Monitoring makro pencapaian koding, berkas pending, akurasi, dan nilai realcost klaim RSUD R. Syamsudin, SH.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
-                  <p className="text-xs text-slate-400 font-semibold">Total Klaim Terverifikasi</p>
-                  <p className="text-3xl font-black text-white mt-2 font-mono">
+                <div className={`p-5 rounded-2xl border transition-all ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className={`text-xs font-semibold ${isEmerald ? 'text-emerald-200' : 'text-slate-500'}`}>Total Klaim Terverifikasi</p>
+                  <p className={`text-3xl font-black mt-2 font-mono ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
                     {formatNumber(summary.total_coded)}
                   </p>
-                  <p className="text-[11px] text-teal-400 mt-1 flex items-center gap-1 font-semibold">
-                    <CheckCircle size={13} /> Selesai Coding 100%
+                  <p className="text-[11px] text-teal-600 mt-1 flex items-center gap-1 font-semibold">
+                    <CheckCircle size={13} className="text-teal-600" /> Selesai Coding 100%
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
-                  <p className="text-xs text-slate-400 font-semibold">Tingkat Penyelesaian (Completion)</p>
-                  <p className="text-3xl font-black text-emerald-400 mt-2 font-mono">
+                <div className={`p-5 rounded-2xl border transition-all ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className={`text-xs font-semibold ${isEmerald ? 'text-emerald-200' : 'text-slate-500'}`}>Tingkat Penyelesaian (Completion)</p>
+                  <p className="text-3xl font-black text-amber-500 mt-2 font-mono">
                     {summary.completion_rate.toFixed(1)}%
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className={`text-[11px] mt-1 ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                     Pending: {formatNumber(summary.total_pending)} berkas
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
-                  <p className="text-xs text-slate-400 font-semibold">Akurasi Berkas Klaim</p>
-                  <p className="text-3xl font-black text-teal-400 mt-2 font-mono">
+                <div className={`p-5 rounded-2xl border transition-all ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className={`text-xs font-semibold ${isEmerald ? 'text-emerald-200' : 'text-slate-500'}`}>Akurasi Berkas Klaim</p>
+                  <p className={`text-3xl font-black mt-2 font-mono ${isEmerald ? 'text-teal-300' : 'text-teal-700'}`}>
                     {summary.overall_accuracy.toFixed(1)}%
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className={`text-[11px] mt-1 ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                     Tanpa catatan dispute Casemix
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700">
-                  <p className="text-xs text-slate-400 font-semibold">Estimasi Total Realcost</p>
-                  <p className="text-2xl sm:text-3xl font-black text-amber-400 mt-2 font-mono truncate">
+                <div className={`p-5 rounded-2xl border transition-all ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className={`text-xs font-semibold ${isEmerald ? 'text-emerald-200' : 'text-slate-500'}`}>Estimasi Nilai Realcost</p>
+                  <p className="text-2xl sm:text-3xl font-black text-teal-700 mt-2 font-mono truncate">
                     {formatCurrency(summary.total_realcost)}
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className={`text-[11px] mt-1 ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                     Rata-rata: {formatCurrency(summary.avg_realcost)} /klaim
                   </p>
                 </div>
               </div>
 
-              <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-700/60 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Building2 size={16} className="text-teal-400" />
-                  <span><strong>{summary.room_count}</strong> Ruangan Rawat Inap Terpetakan</span>
+              <div className={`p-4 rounded-2xl border flex items-center justify-between text-xs font-medium ${
+                isEmerald ? 'bg-emerald-950/60 border-teal-700 text-emerald-100' : 'bg-teal-50/70 border-teal-200 text-teal-950'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <Building2 size={16} className="text-teal-600" />
+                  <span><strong>{summary.room_count}</strong> Ruangan Rawat Inap</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Stethoscope size={16} className="text-teal-400" />
-                  <span><strong>{activeCms.length}</strong> Dokter Case Manager Aktif</span>
+                <div className="flex items-center gap-2">
+                  <Stethoscope size={16} className="text-teal-600" />
+                  <span><strong>{activeCms.length}</strong> Dokter Case Manager</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Award size={16} className="text-teal-400" />
+                <div className="flex items-center gap-2">
+                  <Award size={16} className="text-teal-600" />
                   <span><strong>{activeCoders.length}</strong> Tenaga Koder Aktif</span>
                 </div>
               </div>
@@ -260,21 +300,27 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-950/60 px-3 py-1 rounded-full border border-teal-800">
+                  <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                    isEmerald ? 'bg-amber-400/10 text-amber-300 border-amber-400/30' : 'bg-teal-50 text-teal-800 border-teal-200'
+                  }`}>
                     Slide 2: Evaluasi Koder
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                  <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                     Kecepatan & Ketepatan Waktu Koder (Lead Time Hari)
                   </h2>
                 </div>
-                <p className="text-xs text-slate-400 max-w-sm text-right">
+                <p className={`text-xs max-w-sm text-right ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                   Waktu penyelesaian = Tanggal Input Coding − Tanggal Keluar (dibulatkan ke hari penuh).
                 </p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
-                <div className="lg:col-span-2 bg-slate-800/80 p-4 rounded-2xl border border-slate-700 h-80">
-                  <p className="text-xs font-bold text-slate-300 mb-2">Rata-rata & Maksimal Hari Tunggu per Koder</p>
+                <div className={`lg:col-span-2 p-4 rounded-2xl border h-80 ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className={`text-xs font-bold mb-2 ${isEmerald ? 'text-amber-300' : 'text-slate-800'}`}>
+                    Rata-rata & Maksimal Hari Tunggu per Koder
+                  </p>
                   <ResponsiveContainer width="100%" height="90%">
                     <BarChart
                       data={activeCoders.map((c) => ({
@@ -284,10 +330,10 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
                       }))}
                       margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                      <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} angle={-20} textAnchor="end" />
-                      <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                      <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#475569', color: '#fff', borderRadius: '10px' }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isEmerald ? '#065f46' : '#e2e8f0'} />
+                      <XAxis dataKey="name" tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} angle={-20} textAnchor="end" />
+                      <YAxis tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} />
+                      <Tooltip contentStyle={{ backgroundColor: isEmerald ? '#022c22' : '#ffffff', borderColor: '#0d9488', color: isEmerald ? '#fff' : '#000', borderRadius: '10px' }} />
                       <Legend wrapperStyle={{ fontSize: '11px' }} />
                       <Bar dataKey="Rata-rata (Hari)" fill="#0d9488" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Max (Hari)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
@@ -296,22 +342,28 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
                 </div>
 
                 <div className="space-y-3">
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <p className="text-xs text-teal-400 font-bold uppercase tracking-wider">⚡ Koder Tercepat</p>
-                    <p className="text-lg font-black text-white mt-1">
+                  <div className={`p-4 rounded-2xl border ${
+                    isEmerald ? 'bg-emerald-900/60 border-teal-700' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <p className="text-xs text-teal-600 font-bold uppercase tracking-wider">⚡ Koder Tercepat</p>
+                    <p className={`text-lg font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                       {[...activeCoders].sort((a, b) => (a.avg_delay_days ?? 0) - (b.avg_delay_days ?? 0))[0]?.name || '-'}
                     </p>
-                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                    <p className={`text-xs font-mono mt-0.5 ${isEmerald ? 'text-emerald-200' : 'text-slate-500'}`}>
                       Rata-rata: {[...activeCoders].sort((a, b) => (a.avg_delay_days ?? 0) - (b.avg_delay_days ?? 0))[0]?.avg_delay_days.toFixed(1)} Hari
                     </p>
                   </div>
 
-                  <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <p className="text-xs text-amber-400 font-bold uppercase tracking-wider">📊 Rata-rata Tim Koder</p>
-                    <p className="text-2xl font-black text-white mt-1 font-mono">
+                  <div className={`p-4 rounded-2xl border ${
+                    isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <p className="text-xs text-amber-500 font-bold uppercase tracking-wider">📊 Rata-rata Tim Koder</p>
+                    <p className={`text-2xl font-black mt-1 font-mono ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                       {(activeCoders.reduce((acc, c) => acc + (c.avg_delay_days ?? 0), 0) / (activeCoders.length || 1)).toFixed(1)} Hari
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5">Seluruh berkas terlayani dalam batas SLA</p>
+                    <p className={`text-xs mt-0.5 ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
+                      Seluruh berkas diproses dalam batas wajar
+                    </p>
                   </div>
                 </div>
               </div>
@@ -323,21 +375,27 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-950/60 px-3 py-1 rounded-full border border-teal-800">
+                  <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                    isEmerald ? 'bg-amber-400/10 text-amber-300 border-amber-400/30' : 'bg-teal-50 text-teal-800 border-teal-200'
+                  }`}>
                     Slide 3: Evaluasi Case Manager
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                  <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                     Kinerja Pengawasan & Respon Dokter Case Manager
                   </h2>
                 </div>
-                <p className="text-xs text-slate-400 max-w-sm text-right">
+                <p className={`text-xs max-w-sm text-right ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                   Monitoring efektivitas follow-up berkas kendala asuhan klinis di ruangan.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                  <p className="text-xs font-bold text-slate-300 mb-3">Tingkat Penyelesaian Klaim per Dokter CM (%)</p>
+                <div className={`p-4 rounded-2xl border ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className={`text-xs font-bold mb-3 ${isEmerald ? 'text-amber-300' : 'text-slate-800'}`}>
+                    Tingkat Penyelesaian Klaim per Dokter CM (%)
+                  </p>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
@@ -348,33 +406,39 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
                         }))}
                         margin={{ top: 10, right: 10, left: -20, bottom: 20 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                        <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} angle={-20} textAnchor="end" />
-                        <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#475569', color: '#fff', borderRadius: '10px' }} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={isEmerald ? '#065f46' : '#e2e8f0'} />
+                        <XAxis dataKey="name" tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} angle={-20} textAnchor="end" />
+                        <YAxis tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} />
+                        <Tooltip contentStyle={{ backgroundColor: isEmerald ? '#022c22' : '#ffffff', borderColor: '#0d9488', color: isEmerald ? '#fff' : '#000', borderRadius: '10px' }} />
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        <Bar dataKey="Selesai (%)" fill="#0284c7" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="Akurasi (%)" fill="#10b981" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Selesai (%)" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Akurasi (%)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
-                <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                <div className={`p-4 rounded-2xl border flex flex-col justify-between ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <p className="text-xs font-bold text-slate-300 mb-3">Distribusi Beban Supervisi Ruangan</p>
+                    <p className={`text-xs font-bold mb-3 ${isEmerald ? 'text-amber-300' : 'text-slate-800'}`}>
+                      Distribusi Beban Supervisi Ruangan
+                    </p>
                     <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                       {activeCms.map((cm, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-900/60 rounded-xl border border-slate-800 text-xs">
+                        <div key={idx} className={`flex items-center justify-between p-2.5 rounded-xl border text-xs ${
+                          isEmerald ? 'bg-emerald-950/60 border-emerald-800' : 'bg-white border-slate-200'
+                        }`}>
                           <div>
-                            <p className="font-bold text-white">{cm.name}</p>
-                            <p className="text-[11px] text-slate-400 truncate max-w-[220px]">
+                            <p className={`font-bold ${isEmerald ? 'text-white' : 'text-slate-900'}`}>{cm.name}</p>
+                            <p className={`text-[11px] truncate max-w-[220px] ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                               {cm.rooms.join(', ')}
                             </p>
                           </div>
                           <div className="text-right font-mono">
-                            <span className="text-emerald-400 font-bold">{cm.total_coded} Coded</span>
-                            <p className="text-[10px] text-slate-400">{cm.completion_rate.toFixed(1)}% Rate</p>
+                            <span className="text-teal-600 font-bold">{cm.total_coded} Coded</span>
+                            <p className={`text-[10px] ${isEmerald ? 'text-emerald-200/60' : 'text-slate-400'}`}>{cm.completion_rate.toFixed(1)}% Rate</p>
                           </div>
                         </div>
                       ))}
@@ -390,53 +454,67 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-950/60 px-3 py-1 rounded-full border border-teal-800">
+                  <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                    isEmerald ? 'bg-amber-400/10 text-amber-300 border-amber-400/30' : 'bg-teal-50 text-teal-800 border-teal-200'
+                  }`}>
                     Slide 4: Analisis Bottleneck
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                  <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                     Top 5 Area Keterlambatan Paling Kritis (Lead Time Tertinggi)
                   </h2>
                 </div>
-                <span className="text-xs bg-red-950/80 text-red-400 font-bold px-3 py-1 rounded-full border border-red-800">
+                <span className="text-xs bg-red-50 text-red-700 font-bold px-3 py-1 rounded-full border border-red-200">
                   Prioritas Intervensi Manajemen
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Top 5 Ruangan */}
-                <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                  <p className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-2">🏢 Top 5 Ruangan Terlama</p>
+                <div className={`p-4 rounded-2xl border ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">🏢 Top 5 Ruangan Terlama</p>
                   <div className="space-y-2">
                     {slowestRooms.map((r, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-slate-900/60 rounded-xl text-xs">
-                        <span className="font-semibold text-slate-200 truncate max-w-[130px]">{i + 1}. {r.name}</span>
-                        <span className="font-mono font-bold text-orange-400">{(r.avg_delay_days ?? 0).toFixed(1)} Hari</span>
+                      <div key={i} className={`flex items-center justify-between p-2 rounded-xl text-xs ${
+                        isEmerald ? 'bg-emerald-950/60' : 'bg-white border border-slate-200/60'
+                      }`}>
+                        <span className={`font-semibold truncate max-w-[130px] ${isEmerald ? 'text-slate-200' : 'text-slate-800'}`}>{i + 1}. {r.name}</span>
+                        <span className="font-mono font-bold text-amber-600">{(r.avg_delay_days ?? 0).toFixed(1)} Hari</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Top 5 Koder */}
-                <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                  <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">⚡ Top 5 Koder Terlama</p>
+                <div className={`p-4 rounded-2xl border ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-2">⚡ Top 5 Koder Terlama</p>
                   <div className="space-y-2">
                     {slowestCoders.map((c, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-slate-900/60 rounded-xl text-xs">
-                        <span className="font-semibold text-slate-200 truncate max-w-[130px]">{i + 1}. {c.short_name}</span>
-                        <span className="font-mono font-bold text-amber-400">{(c.avg_delay_days ?? 0).toFixed(1)} Hari</span>
+                      <div key={i} className={`flex items-center justify-between p-2 rounded-xl text-xs ${
+                        isEmerald ? 'bg-emerald-950/60' : 'bg-white border border-slate-200/60'
+                      }`}>
+                        <span className={`font-semibold truncate max-w-[130px] ${isEmerald ? 'text-slate-200' : 'text-slate-800'}`}>{i + 1}. {c.short_name}</span>
+                        <span className="font-mono font-bold text-teal-700">{(c.avg_delay_days ?? 0).toFixed(1)} Hari</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Top 5 Case Manager */}
-                <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">🩺 Top 5 Case Manager Terlama</p>
+                <div className={`p-4 rounded-2xl border ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">🩺 Top 5 Case Manager Terlama</p>
                   <div className="space-y-2">
                     {slowestCms.map((cm, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-slate-900/60 rounded-xl text-xs">
-                        <span className="font-semibold text-slate-200 truncate max-w-[130px]">{i + 1}. {cm.name}</span>
-                        <span className="font-mono font-bold text-blue-400">{(cm.avg_delay_days ?? 0).toFixed(1)} Hari</span>
+                      <div key={i} className={`flex items-center justify-between p-2 rounded-xl text-xs ${
+                        isEmerald ? 'bg-emerald-950/60' : 'bg-white border border-slate-200/60'
+                      }`}>
+                        <span className={`font-semibold truncate max-w-[130px] ${isEmerald ? 'text-slate-200' : 'text-slate-800'}`}>{i + 1}. {cm.name}</span>
+                        <span className="font-mono font-bold text-blue-600">{(cm.avg_delay_days ?? 0).toFixed(1)} Hari</span>
                       </div>
                     ))}
                   </div>
@@ -450,43 +528,49 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-950/60 px-3 py-1 rounded-full border border-teal-800">
+                  <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                    isEmerald ? 'bg-amber-400/10 text-amber-300 border-amber-400/30' : 'bg-teal-50 text-teal-800 border-teal-200'
+                  }`}>
                     Slide 5: Pemetaan Kendala
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                  <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                     Analisis Catatan Casemix & Akar Masalah Klaim Pending
                   </h2>
                 </div>
-                <p className="text-xs text-slate-400 max-w-sm text-right">
+                <p className={`text-xs max-w-sm text-right ${isEmerald ? 'text-emerald-200/70' : 'text-slate-500'}`}>
                   Dikelompokkan otomatis dari deskripsi berkas yang dikembalikan / terhambat.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
-                <div className="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 h-72">
+                <div className={`p-4 rounded-2xl border h-72 ${
+                  isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={issue_metrics.slice(0, 6)}
                       layout="vertical"
                       margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#334155" />
-                      <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                      <YAxis dataKey="issue" type="category" width={140} tick={{ fill: '#e2e8f0', fontSize: 11 }} />
-                      <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#475569', color: '#fff', borderRadius: '10px' }} />
-                      <Bar dataKey="count" fill="#f59e0b" radius={[0, 6, 6, 0]} name="Kasus" />
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={isEmerald ? '#065f46' : '#e2e8f0'} />
+                      <XAxis type="number" tick={{ fill: isEmerald ? '#a7f3d0' : '#475569', fontSize: 11 }} />
+                      <YAxis dataKey="issue" type="category" width={140} tick={{ fill: isEmerald ? '#e2e8f0' : '#1e293b', fontSize: 11 }} />
+                      <Tooltip contentStyle={{ backgroundColor: isEmerald ? '#022c22' : '#ffffff', borderColor: '#0d9488', color: isEmerald ? '#fff' : '#000', borderRadius: '10px' }} />
+                      <Bar dataKey="count" fill="#0d9488" radius={[0, 6, 6, 0]} name="Kasus" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
 
                 <div className="space-y-2">
                   {issue_metrics.slice(0, 5).map((iss, idx) => (
-                    <div key={idx} className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 flex items-center justify-between text-xs">
+                    <div key={idx} className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
+                      isEmerald ? 'bg-emerald-900/60 border-emerald-700' : 'bg-white border-slate-200 shadow-sm'
+                    }`}>
                       <div className="flex items-center gap-2">
-                        <AlertTriangle size={14} className="text-amber-400 shrink-0" />
-                        <span className="font-semibold text-slate-200">{iss.issue}</span>
+                        <AlertTriangle size={14} className="text-amber-500 shrink-0" />
+                        <span className={`font-semibold ${isEmerald ? 'text-slate-200' : 'text-slate-800'}`}>{iss.issue}</span>
                       </div>
-                      <span className="font-mono font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800">
+                      <span className="font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                         {iss.count} Berkas
                       </span>
                     </div>
@@ -500,56 +584,70 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
           {currentSlide === 6 && (
             <div className="space-y-4">
               <div className="text-center max-w-2xl mx-auto">
-                <span className="text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-950/60 px-3 py-1 rounded-full border border-teal-800">
+                <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border ${
+                  isEmerald ? 'bg-amber-400/10 text-amber-300 border-amber-400/30' : 'bg-teal-50 text-teal-800 border-teal-200'
+                }`}>
                   Slide 6: Rekomendasi Manajemen
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
+                <h2 className={`text-2xl sm:text-3xl font-black mt-1 ${isEmerald ? 'text-white' : 'text-slate-900'}`}>
                   Rencana Aksi Strategis Percepatan Klaim RSUD R. Syamsudin, SH
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-teal-800/60 flex flex-col justify-between">
+                <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
+                  isEmerald ? 'bg-emerald-900/70 border-teal-700' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <div className="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-bold mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black mb-3 shadow">
                       1
                     </div>
-                    <h3 className="font-bold text-white text-sm mb-2">Penegakan SLA Resume & TTD DPJP</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
+                    <h3 className={`font-bold text-sm mb-2 ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
+                      Penegakan SLA Resume & TTD DPJP
+                    </h3>
+                    <p className={`text-xs leading-relaxed ${isEmerald ? 'text-emerald-100/80' : 'text-slate-600'}`}>
                       Menetapkan batas waktu pengisian Resume Medis dan Tanda Tangan DPJP maksimal 1x24 jam pasca pasien pulang untuk memangkas antrian berkas pending.
                     </p>
                   </div>
-                  <span className="mt-4 text-[10px] font-bold text-teal-400 uppercase tracking-wider">
+                  <span className="mt-4 text-[10px] font-bold text-teal-600 uppercase tracking-wider">
                     Target: Penurunan Delay 50%
                   </span>
                 </div>
 
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-blue-800/60 flex flex-col justify-between">
+                <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
+                  isEmerald ? 'bg-emerald-900/70 border-teal-700' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black mb-3 shadow">
                       2
                     </div>
-                    <h3 className="font-bold text-white text-sm mb-2">Integrasi Hasil PA & Penunjang Medis</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
+                    <h3 className={`font-bold text-sm mb-2 ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
+                      Integrasi Hasil PA & Penunjang Medis
+                    </h3>
+                    <p className={`text-xs leading-relaxed ${isEmerald ? 'text-emerald-100/80' : 'text-slate-600'}`}>
                       Mempercepat proses digitalisasi upload hasil Patologi Anatomi (PA), CT Scan, dan Echo ke RME agar koding definitif tidak tertunda berminggu-minggu.
                     </p>
                   </div>
-                  <span className="mt-4 text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                  <span className="mt-4 text-[10px] font-bold text-teal-600 uppercase tracking-wider">
                     Target: Nol Pending Hasil PA
                   </span>
                 </div>
 
-                <div className="bg-slate-800/80 p-5 rounded-2xl border border-amber-800/60 flex flex-col justify-between">
+                <div className={`p-5 rounded-2xl border flex flex-col justify-between ${
+                  isEmerald ? 'bg-emerald-900/70 border-teal-700' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black mb-3 shadow">
                       3
                     </div>
-                    <h3 className="font-bold text-white text-sm mb-2">Optimalisasi Peran Case Manager</h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
+                    <h3 className={`font-bold text-sm mb-2 ${isEmerald ? 'text-white' : 'text-teal-950'}`}>
+                      Optimalisasi Peran Case Manager
+                    </h3>
+                    <p className={`text-xs leading-relaxed ${isEmerald ? 'text-emerald-100/80' : 'text-slate-600'}`}>
                       Memperkuat supervisi harian Case Manager di ruangan asuhan untuk proaktif menyelesaikan dispute klinis sebelum berkas diserahkan ke tim koder.
                     </p>
                   </div>
-                  <span className="mt-4 text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                  <span className="mt-4 text-[10px] font-bold text-teal-600 uppercase tracking-wider">
                     Target: Akurasi Klaim &gt;95%
                   </span>
                 </div>
@@ -558,25 +656,27 @@ export default function ManagementPresentation({ data }: { data: DashboardData }
           )}
         </div>
 
-        {/* Slide Footer */}
-        <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
-          <p className="flex items-center gap-1">
-            <Sparkles size={14} className="text-teal-400" />
-            Dashboard Casemix Enterprise • RSUD R. Syamsudin, SH
+        {/* Slide Footer with Official RSUD Tagline */}
+        <div className={`flex items-center justify-between pt-3 text-xs border-t ${
+          isEmerald ? 'border-teal-700 text-emerald-200/70' : 'border-teal-100 text-slate-500'
+        }`}>
+          <p className="flex items-center gap-1 font-medium">
+            <Sparkles size={14} className="text-teal-600" />
+            RSUD R. Syamsudin, S.H. Kota Sukabumi • Casemix Business Intelligence
           </p>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {Array.from({ length: totalSlides }).map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentSlide(idx + 1)}
                 className={`h-2 rounded-full transition-all ${
-                  currentSlide === idx + 1 ? 'w-6 bg-teal-400' : 'w-2 bg-slate-700 hover:bg-slate-600'
+                  currentSlide === idx + 1 ? 'w-6 bg-teal-600' : 'w-2 bg-slate-200 hover:bg-slate-300'
                 }`}
                 title={`Menuju Slide ${idx + 1}`}
               />
             ))}
           </div>
-          <p className="font-mono">
+          <p className="font-mono font-bold text-teal-700">
             {currentSlide} / {totalSlides}
           </p>
         </div>

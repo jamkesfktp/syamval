@@ -31,38 +31,51 @@ export default async function exportPptx(tabName: string) {
     const slide = pptx.addSlide();
 
     // Background
-    slide.background = { color: 'F8FAFC' };
+    slide.background = { color: '032E2B' }; // Dark Emerald Background
 
     // Header bar
     slide.addShape(pptx.ShapeType.rect, {
       x: 0,
       y: 0,
       w: '100%',
-      h: 0.8,
-      fill: { color: '0D9488' }, // Teal
+      h: 0.85,
+      fill: { color: '064E3B' },
+      line: { color: 'F59E0B', width: 2 } // Gold Bottom Border
     });
 
     // Header text
-    slide.addText(`RSUD R. SYAMSUDIN, SH - DASHBOARD EVALUASI CASEMIX`, {
+    slide.addText(`RSUD R. SYAMSUDIN, S.H. - EVALUASI CASEMIX BPJS`, {
       x: 0.5,
       y: 0.15,
       w: 8.5,
-      h: 0.5,
-      fontSize: 14,
+      h: 0.35,
+      fontSize: 13,
       fontFace: 'Arial',
       color: 'FFFFFF',
       bold: true,
     });
 
-    slide.addText(`Periode Laporan / Tab: ${tabName.toUpperCase()}`, {
-      x: 9.5,
-      y: 0.22,
-      w: 3.5,
-      h: 0.4,
+    slide.addText(`RUMAH SAKIT UMUM DAERAH KOTA SUKABUMI`, {
+      x: 0.5,
+      y: 0.45,
+      w: 8.5,
+      h: 0.25,
+      fontSize: 9,
+      fontFace: 'Arial',
+      color: 'FBBF24', // Gold
+      bold: true,
+    });
+
+    slide.addText(`Kategori: ${tabName.replace(/_/g, ' ').toUpperCase()}`, {
+      x: 9.0,
+      y: 0.25,
+      w: 3.8,
+      h: 0.35,
       fontSize: 10,
       fontFace: 'Arial',
-      color: 'CCFBF1',
+      color: 'FEF3C7',
       align: 'right',
+      bold: true
     });
 
     // Calculate dimensions to maintain aspect ratio within 16:9 slide (13.33 x 7.5 inches)

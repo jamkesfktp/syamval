@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Search, FileText, CheckCircle2, AlertCircle, Clock, Download } from 'lucide-react';
+import { X, Search, AlertCircle, Download } from 'lucide-react';
 import { formatCurrency } from '../types';
 
 import * as XLSX from 'xlsx';

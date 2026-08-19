@@ -1,5 +1,5 @@
 import * as xlsx from 'xlsx';
-import type { DashboardData, Summary, CoderMetric, CmMetric, PicMetric, RoomMetric, SmfDistribution } from '../types';
+import type { DashboardData, Summary, CoderMetric, CmMetric, PicMetric, RoomMetric } from '../types';
 import roomMapping from '../data/roomMapping.json';
 
 type RoomMappingType = {
@@ -108,7 +108,6 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     const catatan = String(row['Catatan Casemix'] || '').trim();
     const cost = Math.ceil(parseCost(row['Realcost']));
     const roomName = String(row['Poli/Ruangan'] || 'Unknown').trim();
-    const dokterName = String(row['Dokter'] || 'Unknown').trim();
     
     // Track issues
     if (hasIssue && catatan !== 'null' && catatan !== 'undefined') {
@@ -274,7 +273,7 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     const avgDays = c.total_coded > 0 ? c.total_delay / c.total_coded : 0;
     return {
       name: c.name,
-      rooms: Array.from(c.rooms),
+      rooms: Array.from(c.rooms) as string[],
       total_coded: c.total_coded,
       total_pending: c.total_pending,
       total_all: c.total_coded + c.total_pending,
@@ -291,7 +290,7 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
 
   const pic_metrics: PicMetric[] = Array.from(picMap.values()).map(p => ({
     name: p.name,
-    rooms: Array.from(p.rooms),
+    rooms: Array.from(p.rooms) as string[],
     total_coded: p.total_coded,
     total_pending: p.total_pending,
     with_issues: p.with_issues,

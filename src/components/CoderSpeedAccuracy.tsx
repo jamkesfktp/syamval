@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CoderMetric, DashboardData } from '../types';
+import type { CoderMetric } from '../types';
 import { formatNumber, formatCurrency, getAccuracyBadge } from '../types';
 import {
   BarChart,
@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { Zap, Clock, Target, ArrowUpDown, ChevronRight } from 'lucide-react';
+import { Zap, Clock, Target, ChevronRight } from 'lucide-react';
 import DrilldownModal from './DrilldownModal';
 
 interface CoderSpeedAccuracyProps {

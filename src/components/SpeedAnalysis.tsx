@@ -14,25 +14,27 @@ interface SpeedAnalysisProps {
   coderMetrics: CoderMetric[];
 }
 
-function getDelayColor(hours: number): string {
-  if (hours <= 48) return '#22c55e';
-  if (hours <= 72) return '#3b82f6';
-  if (hours <= 96) return '#f59e0b';
+function getDelayColor(days: number): string {
+  if (days <= 2) return '#22c55e';
+  if (days <= 4) return '#3b82f6';
+  if (days <= 7) return '#f59e0b';
   return '#ef4444';
 }
 
 export default function SpeedAnalysis({ coderMetrics }: SpeedAnalysisProps) {
-  const sortedByDelay = [...coderMetrics].sort((a, b) => a.avg_delay_hours - b.avg_delay_hours);
+  const sortedByDelay = [...coderMetrics].sort((a, b) => (a.avg_delay_days ?? a.avg_delay_hours ?? 0) - (b.avg_delay_days ?? b.avg_delay_hours ?? 0));
 
   const speedData = sortedByDelay.map((c) => ({
     name: c.short_name,
-    'Keterlambatan (jam)': c.avg_delay_hours,
+    'Keterlambatan (hari)': c.avg_delay_days ?? (c.avg_delay_hours ? c.avg_delay_hours / 24 : 0),
   }));
 
   const avgDelay =
-    coderMetrics.reduce((sum, c) => sum + c.avg_delay_hours, 0) / coderMetrics.length;
-  const fastest = sortedByDelay[0];
-  const slowest = sortedByDelay[sortedByDelay.length - 1];
+    coderMetrics.length > 0
+      ? coderMetrics.reduce((sum, c) => sum + (c.avg_delay_days ?? (c.avg_delay_hours ? c.avg_delay_hours / 24 : 0)), 0) / coderMetrics.length
+      : 0;
+  const fastest = sortedByDelay[0] || { short_name: '-', avg_delay_days: 0, avg_delay_hours: 0 };
+  const slowest = sortedByDelay[sortedByDelay.length - 1] || { short_name: '-', avg_delay_days: 0, avg_delay_hours: 0 };
 
   return (
     <div className="space-y-6">
@@ -40,51 +42,51 @@ export default function SpeedAnalysis({ coderMetrics }: SpeedAnalysisProps) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <p className="text-sm text-gray-500">Rata-rata Keterlambatan</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">{avgDelay.toFixed(1)} <span className="text-sm font-medium">jam</span></p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">{avgDelay.toFixed(1)} <span className="text-sm font-medium">hari</span></p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <p className="text-sm text-gray-500">Tercepat</p>
           <p className="text-lg font-bold text-green-600 mt-1">{fastest.short_name}</p>
-          <p className="text-sm text-gray-500">{fastest.avg_delay_hours.toFixed(1)} jam</p>
+          <p className="text-sm text-gray-500">{(fastest.avg_delay_days ?? 0).toFixed(1)} hari</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <p className="text-sm text-gray-500">Terlambat</p>
           <p className="text-lg font-bold text-red-600 mt-1">{slowest.short_name}</p>
-          <p className="text-sm text-gray-500">{slowest.avg_delay_hours.toFixed(1)} jam</p>
+          <p className="text-sm text-gray-500">{(slowest.avg_delay_days ?? 0).toFixed(1)} hari</p>
         </div>
       </div>
 
       {/* Speed Chart */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <h3 className="text-base font-semibold text-gray-800 mb-1">Kecepatan Coding per Koder</h3>
-        <p className="text-xs text-gray-500 mb-4">Rata-rata keterlambatan dalam jam (semakin rendah semakin baik)</p>
+        <p className="text-xs text-gray-500 mb-4">Rata-rata keterlambatan dalam hari (semakin rendah semakin baik)</p>
         <div className="h-72 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={speedData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={70} />
-              <YAxis tick={{ fontSize: 12 }} unit=" jam" />
+              <YAxis tick={{ fontSize: 12 }} unit=" hari" />
               <Tooltip
                 contentStyle={{
                   borderRadius: '8px',
                   border: '1px solid #e5e7eb',
                   boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                 }}
-                formatter={(value: any) => [Number(value).toFixed(1) + ' jam', 'Rata-rata Keterlambatan']}
+                formatter={(value: any) => [Number(value).toFixed(1) + ' hari', 'Rata-rata Keterlambatan']}
               />
-              <Bar dataKey="Keterlambatan (jam)" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="Keterlambatan (hari)" radius={[4, 4, 0, 0]}>
                 {speedData.map((entry, index) => (
-                  <Cell key={index} fill={getDelayColor(entry['Keterlambatan (jam)'])} />
+                  <Cell key={index} fill={getDelayColor(entry['Keterlambatan (hari)'])} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-green-500" /> ≤ 48 jam</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-500" /> 48-72 jam</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-amber-500" /> 72-96 jam</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> &gt; 96 jam</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-green-500" /> ≤ 2 hari</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-blue-500" /> 2-4 hari</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-amber-500" /> 4-7 hari</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-red-500" /> &gt; 7 hari</span>
         </div>
       </div>
 
@@ -104,13 +106,14 @@ export default function SpeedAnalysis({ coderMetrics }: SpeedAnalysisProps) {
             </thead>
             <tbody>
               {sortedByDelay.map((coder, idx) => {
-                const color = getDelayColor(coder.avg_delay_hours);
+                const delayDays = coder.avg_delay_days ?? (coder.avg_delay_hours ? coder.avg_delay_hours / 24 : 0);
+                const color = getDelayColor(delayDays);
                 const statusLabel =
-                  coder.avg_delay_hours <= 48
+                  delayDays <= 2
                     ? 'Sangat Baik'
-                    : coder.avg_delay_hours <= 72
+                    : delayDays <= 4
                       ? 'Baik'
-                      : coder.avg_delay_hours <= 96
+                      : delayDays <= 7
                         ? 'Perlu Perhatian'
                         : 'Perlu Perbaikan';
                 return (
@@ -120,7 +123,7 @@ export default function SpeedAnalysis({ coderMetrics }: SpeedAnalysisProps) {
                   >
                     <td className="py-3 px-3 text-gray-700 font-medium">{idx + 1}</td>
                     <td className="py-3 px-3 font-medium text-gray-800 whitespace-nowrap">{coder.short_name}</td>
-                    <td className="py-3 px-3 text-right font-semibold" style={{ color }}>{coder.avg_delay_hours.toFixed(1)} jam</td>
+                    <td className="py-3 px-3 text-right font-semibold" style={{ color }}>{delayDays.toFixed(1)} hari</td>
                     <td className="py-3 px-3 text-right text-gray-700">{coder.total_claims}</td>
                     <td className="py-3 px-3 text-right">
                       <span

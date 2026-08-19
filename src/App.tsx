@@ -43,7 +43,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('ringkasan');
   const [data, setData] = useState<DashboardData>(defaultDashboardData as any);
   
-  const { summary, coder_metrics, cm_metrics, pic_metrics, room_metrics, smf_distribution } = data;
+  const { summary, coder_metrics, cm_metrics, room_metrics, smf_distribution } = data;
 
   const handleFileUpload = async (files: File[]) => {
     try {

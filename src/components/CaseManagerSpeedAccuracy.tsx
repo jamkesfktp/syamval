@@ -10,9 +10,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell,
 } from 'recharts';
-import { Users, Clock, CheckCircle2, ChevronRight, Activity } from 'lucide-react';
+import { Users, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
 import DrilldownModal from './DrilldownModal';
 
 interface CaseManagerSpeedAccuracyProps {

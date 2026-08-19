@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Hospital, LogIn, ArrowRight } from 'lucide-react';
 
 interface LoginProps {
