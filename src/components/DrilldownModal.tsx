@@ -47,11 +47,9 @@ export default function DrilldownModal({
 
   const totalFilteredCost = filteredClaims.reduce((acc, r) => acc + (r._cost || 0), 0);
 
-  const formatDelay = (hrs: number) => {
-    if (!hrs || hrs <= 0) return '-';
-    const d = Math.floor(hrs / 24);
-    const h = Math.round(hrs % 24);
-    return `${d > 0 ? d + 'h ' : ''}${h}j`;
+  const formatDelay = (days: number) => {
+    if (days === undefined || days === null) return '-';
+    return `${days} Hari`;
   };
 
   const handleExportExcel = () => {
@@ -74,7 +72,7 @@ export default function DrilldownModal({
       'Status Coding': r._isCoded ? 'Selesai' : 'Pending',
       'Coding ICD': r['Coding ICD'] || '-',
       'Tarif / Realcost (Rp)': r._cost || 0,
-      'Delay (Jam)': Math.round(r._delayHours || 0),
+      'Waktu Penyelesaian (Hari)': r._delayDays || 0,
       'Catatan Casemix': r['Catatan Casemix'] || '-'
     }));
 
@@ -237,7 +235,7 @@ export default function DrilldownModal({
                     {formatCurrency(row._cost || 0)}
                   </td>
                   <td className="px-3 py-2.5 text-center font-mono text-gray-600">
-                    {formatDelay(row._delayHours)}
+                    {formatDelay(row._delayDays)}
                   </td>
                   <td className="px-3 py-2.5 max-w-[200px]">
                     {row['Catatan Casemix'] ? (

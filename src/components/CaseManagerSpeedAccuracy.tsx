@@ -29,15 +29,15 @@ export default function CaseManagerSpeedAccuracy({
   const delayData = cmMetrics.map((cm) => ({
     name: cm.name.replace('Dr. ', ''),
     fullName: cm.name,
-    'Rata-rata Delay (Jam)': Number(cm.avg_delay_hours.toFixed(1)),
-    'Max Delay (Jam)': Number((cm.max_delay_hours || 0).toFixed(1)),
+    'Rata-rata Delay (Hari)': Number((cm.avg_delay_days ?? cm.avg_delay_hours ?? 0).toFixed(1)),
+    'Max Delay (Hari)': Number((cm.max_delay_days ?? cm.max_delay_hours ?? 0).toFixed(1)),
   }));
 
   const completionData = cmMetrics.map((cm) => ({
     name: cm.name.replace('Dr. ', ''),
     fullName: cm.name,
-    'Selesai (%)': Number(cm.completion_rate.toFixed(1)),
-    'Akurasi (%)': Number(cm.accuracy.toFixed(1)),
+    'Selesai (%)': Number((cm.completion_rate ?? 0).toFixed(1)),
+    'Akurasi (%)': Number((cm.accuracy ?? 0).toFixed(1)),
   }));
 
   const getFilteredClaims = () => {
@@ -48,6 +48,14 @@ export default function CaseManagerSpeedAccuracy({
         String(c._cm || '').toLowerCase().includes(selectedCm.toLowerCase())
     );
   };
+
+  const avgCmCompletion = cmMetrics.length > 0
+    ? cmMetrics.reduce((acc, c) => acc + (c.completion_rate ?? 0), 0) / cmMetrics.length
+    : 0;
+
+  const avgCmDelay = cmMetrics.length > 0
+    ? cmMetrics.reduce((acc, c) => acc + (c.avg_delay_days ?? c.avg_delay_hours ?? 0), 0) / cmMetrics.length
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -70,7 +78,7 @@ export default function CaseManagerSpeedAccuracy({
           <div>
             <p className="text-xs font-medium text-gray-500">Rata-rata Completion Rate</p>
             <p className="text-xl font-bold text-gray-900">
-              {(cmMetrics.reduce((acc, c) => acc + c.completion_rate, 0) / (cmMetrics.length || 1)).toFixed(1)}%
+              {avgCmCompletion.toFixed(1)}%
             </p>
           </div>
         </div>
@@ -82,7 +90,7 @@ export default function CaseManagerSpeedAccuracy({
           <div>
             <p className="text-xs font-medium text-gray-500">Rata-rata Respon / Delay</p>
             <p className="text-xl font-bold text-amber-600">
-              {(cmMetrics.reduce((acc, c) => acc + c.avg_delay_hours, 0) / (cmMetrics.length || 1)).toFixed(1)} Jam
+              {avgCmDelay.toFixed(1)} Hari
             </p>
           </div>
         </div>
@@ -94,8 +102,8 @@ export default function CaseManagerSpeedAccuracy({
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-gray-800">Waktu Tunggu & Keterlambatan per Case Manager</h3>
-              <p className="text-xs text-gray-400">Durasi rata-rata dan maksimum berkas tertahan di ruangan asuhan</p>
+              <h3 className="text-sm font-bold text-gray-800">Waktu Tunggu & Keterlambatan per Case Manager (Hari)</h3>
+              <p className="text-xs text-gray-400">Durasi rata-rata berkas tertahan di ruangan asuhan hingga selesai koding</p>
             </div>
             <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
               Case Manager
@@ -109,11 +117,11 @@ export default function CaseManagerSpeedAccuracy({
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
                   contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: any) => [`${value} jam`, '']}
+                  formatter={(value: any) => [`${value} hari`, '']}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
-                <Bar dataKey="Rata-rata Delay (Jam)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Max Delay (Jam)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Rata-rata Delay (Hari)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Max Delay (Hari)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -212,12 +220,12 @@ export default function CaseManagerSpeedAccuracy({
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right font-mono">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${getAccuracyBadge(cm.accuracy)}`}>
-                      {cm.accuracy.toFixed(1)}%
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${getAccuracyBadge(cm.accuracy ?? 0)}`}>
+                      {(cm.accuracy ?? 0).toFixed(1)}%
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right font-mono text-blue-700 font-semibold">
-                    {cm.avg_delay_hours.toFixed(1)} Jam
+                    {(cm.avg_delay_days ?? cm.avg_delay_hours ?? 0).toFixed(1)} Hari
                   </td>
                   <td className="py-3 px-4 text-right font-mono font-medium text-gray-800 whitespace-nowrap">
                     {formatCurrency(cm.total_realcost)}

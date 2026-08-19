@@ -29,8 +29,10 @@ export interface CoderMetric {
   with_issues: number;
   with_cm_notes: number;
   accuracy: number;
-  avg_delay_hours: number;
-  max_delay_hours: number;
+  avg_delay_days: number;
+  max_delay_days: number;
+  avg_delay_hours?: number;
+  max_delay_hours?: number;
   total_realcost: number;
   avg_realcost: number;
 }
@@ -44,8 +46,10 @@ export interface CmMetric {
   with_issues: number;
   accuracy: number;
   completion_rate: number;
-  avg_delay_hours: number;
-  max_delay_hours: number;
+  avg_delay_days: number;
+  max_delay_days: number;
+  avg_delay_hours?: number;
+  max_delay_hours?: number;
   total_realcost: number;
 }
 
@@ -67,8 +71,10 @@ export interface RoomMetric {
   total_coded: number;
   total_pending: number;
   with_issues: number;
-  avg_delay_hours: number;
-  max_delay_hours: number;
+  avg_delay_days: number;
+  max_delay_days: number;
+  avg_delay_hours?: number;
+  max_delay_hours?: number;
   total_realcost: number;
 }
 

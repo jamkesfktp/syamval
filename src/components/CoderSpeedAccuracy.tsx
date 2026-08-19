@@ -23,17 +23,19 @@ interface CoderSpeedAccuracyProps {
 export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpeedAccuracyProps) {
   const [selectedCoder, setSelectedCoder] = useState<string | null>(null);
 
-  const delayData = coderMetrics.map((c) => ({
+  const activeCoders = coderMetrics.filter((c) => (c.total_claims ?? 0) > 0);
+
+  const delayData = activeCoders.map((c) => ({
     name: c.short_name,
     fullName: c.name,
-    'Rata-rata Delay (Jam)': Number(c.avg_delay_hours.toFixed(1)),
-    'Max Delay (Jam)': Number((c.max_delay_hours || 0).toFixed(1)),
+    'Rata-rata Delay (Hari)': Number((c.avg_delay_days ?? c.avg_delay_hours ?? 0).toFixed(1)),
+    'Max Delay (Hari)': Number((c.max_delay_days ?? c.max_delay_hours ?? 0).toFixed(1)),
   }));
 
-  const accuracyData = coderMetrics.map((c) => ({
+  const accuracyData = activeCoders.map((c) => ({
     name: c.short_name,
     fullName: c.name,
-    accuracy: Number(c.accuracy.toFixed(1)),
+    accuracy: Number((c.accuracy ?? 0).toFixed(1)),
   }));
 
   const getFilteredClaims = () => {
@@ -44,6 +46,18 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
         String(c._coder || '').toLowerCase().includes(selectedCoder.toLowerCase())
     );
   };
+
+  const avgCoderSpeed = activeCoders.length > 0
+    ? activeCoders.reduce((acc, c) => acc + (c.avg_delay_days ?? c.avg_delay_hours ?? 0), 0) / activeCoders.length
+    : 0;
+
+  const avgCoderAcc = activeCoders.length > 0
+    ? activeCoders.reduce((acc, c) => acc + (c.accuracy ?? 0), 0) / activeCoders.length
+    : 0;
+
+  const maxCoderDelay = activeCoders.length > 0
+    ? Math.max(...activeCoders.map((c) => c.max_delay_days ?? c.max_delay_hours ?? 0))
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -56,7 +70,7 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
           <div>
             <p className="text-xs font-medium text-gray-500">Rata-rata Kecepatan Koder</p>
             <p className="text-xl font-bold text-gray-900">
-              {(coderMetrics.reduce((acc, c) => acc + c.avg_delay_hours, 0) / (coderMetrics.length || 1)).toFixed(1)} Jam
+              {avgCoderSpeed.toFixed(1)} Hari
             </p>
           </div>
         </div>
@@ -68,7 +82,7 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
           <div>
             <p className="text-xs font-medium text-gray-500">Rata-rata Akurasi Koder</p>
             <p className="text-xl font-bold text-gray-900">
-              {(coderMetrics.reduce((acc, c) => acc + c.accuracy, 0) / (coderMetrics.length || 1)).toFixed(1)}%
+              {avgCoderAcc.toFixed(1)}%
             </p>
           </div>
         </div>
@@ -80,7 +94,7 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
           <div>
             <p className="text-xs font-medium text-gray-500">Max Delay Terlama</p>
             <p className="text-xl font-bold text-amber-600">
-              {Math.max(...coderMetrics.map((c) => c.max_delay_hours || 0)).toFixed(1)} Jam
+              {maxCoderDelay.toFixed(1)} Hari
             </p>
           </div>
         </div>
@@ -92,8 +106,8 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-gray-800">Kecepatan & Waktu Tunggu Koder (Jam)</h3>
-              <p className="text-xs text-gray-400">Selisih waktu dari pasien pulang hingga selesai dikoding</p>
+              <h3 className="text-sm font-bold text-gray-800">Kecepatan & Waktu Tunggu Koder (Hari)</h3>
+              <p className="text-xs text-gray-400">Tanggal Input Coding − Tanggal Keluar (dibulatkan ke hari penuh)</p>
             </div>
             <span className="text-xs font-semibold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-full">
               Koder
@@ -107,11 +121,11 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip
                   contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: any) => [`${value} jam`, '']}
+                  formatter={(value: any) => [`${value} hari`, '']}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
-                <Bar dataKey="Rata-rata Delay (Jam)" fill="#0d9488" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Max Delay (Jam)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Rata-rata Delay (Hari)" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Max Delay (Hari)" fill="#f59e0b" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -178,7 +192,7 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {coderMetrics.map((coder) => (
+              {activeCoders.map((coder) => (
                 <tr
                   key={coder.name}
                   onClick={() => setSelectedCoder(coder.name)}
@@ -197,15 +211,15 @@ export default function CoderSpeedAccuracy({ coderMetrics, rawClaims }: CoderSpe
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right font-mono">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${getAccuracyBadge(coder.accuracy)}`}>
-                      {coder.accuracy.toFixed(1)}%
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${getAccuracyBadge(coder.accuracy ?? 0)}`}>
+                      {(coder.accuracy ?? 0).toFixed(1)}%
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right font-mono text-teal-700 font-semibold">
-                    {coder.avg_delay_hours.toFixed(1)} Jam
+                    {(coder.avg_delay_days ?? coder.avg_delay_hours ?? 0).toFixed(1)} Hari
                   </td>
                   <td className="py-3 px-4 text-right font-mono text-amber-600 font-semibold">
-                    {(coder.max_delay_hours || 0).toFixed(1)} Jam
+                    {(coder.max_delay_days ?? coder.max_delay_hours ?? 0).toFixed(1)} Hari
                   </td>
                   <td className="py-3 px-4 text-right font-mono font-medium text-gray-800 whitespace-nowrap">
                     {formatCurrency(coder.total_realcost)}

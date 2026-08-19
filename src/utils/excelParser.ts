@@ -36,27 +36,50 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     return parseInt(String(costStr).replace(/\./g, ''), 10) || 0;
   };
 
-  const calculateDelay = (tglKeluar: string | number, tglInput: number) => {
-    // TglInput is excel date format (days since 1900-01-01)
-    if (!tglKeluar || !tglInput) return 0;
+  const parseToUtcMidnight = (val: any): number | null => {
+    if (!val && val !== 0) return null;
     
-    let keluarDate: Date;
-    // Check if tglKeluar is also Excel serial date
-    if (typeof tglKeluar === 'number') {
-      keluarDate = new Date(Math.round((tglKeluar - 25569) * 86400 * 1000));
-    } else {
-      // Assuming tglKeluar is dd/mm/yyyy or dd-mm-yyyy
-      const parts = String(tglKeluar).split(/[-\/]/);
-      if (parts.length === 3) {
-        keluarDate = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
-      } else {
-        return 0; // Invalid format
+    if (typeof val === 'number') {
+      const parsed = xlsx.SSF.parse_date_code(val);
+      if (!parsed) return null;
+      
+      let year = parsed.y;
+      let month = parsed.m;
+      let day = parsed.d;
+
+      // In Syamval reports, date of input coding is entered as DD/MM/YYYY but Excel serializes as M/D/YYYY
+      if (month === 1 && day >= 1 && day <= 31) {
+        month = day;
+        day = parsed.m;
       }
+
+      return Date.UTC(year, month - 1, day, 0, 0, 0, 0);
     }
 
-    const inputDate = new Date(Math.round((tglInput - 25569) * 86400 * 1000));
-    const diffHrs = (inputDate.getTime() - keluarDate.getTime()) / (1000 * 60 * 60);
-    return diffHrs > 0 ? diffHrs : 0;
+    const str = String(val).trim().split(' ')[0];
+    const parts = str.split(/[-\/]/);
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        // YYYY-MM-DD
+        return Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 0, 0, 0, 0);
+      } else {
+        // DD-MM-YYYY (Indonesian format)
+        return Date.UTC(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]), 0, 0, 0, 0);
+      }
+    }
+    return null;
+  };
+
+  const calculateDelayDays = (tglKeluar: any, tglCoding: any): number => {
+    const utcKeluar = parseToUtcMidnight(tglKeluar);
+    const utcCoding = parseToUtcMidnight(tglCoding);
+    if (utcKeluar === null || utcCoding === null) return 0;
+    
+    // Waktu penyelesaian = tanggal input coding − tanggal keluar (dibulatkan ke hari penuh)
+    // Tanggal dinormalisasi ke UTC 00:00
+    // Jika coding sebelum keluar, dianggap 0 hari
+    const diffDays = Math.round((utcCoding - utcKeluar) / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
   };
 
   const issueMap = new Map<string, number>();
@@ -115,7 +138,7 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     
     let delay = 0;
     if (isCoded && row['Tanggal Keluar'] && row['Tanggal input Coding']) {
-      delay = calculateDelay(row['Tanggal Keluar'], row['Tanggal input Coding']);
+      delay = calculateDelayDays(row['Tanggal Keluar'], row['Tanggal input Coding']);
     }
 
     // Enrich rawData row for instant drilldown
@@ -126,7 +149,8 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     row._room = roomName;
     row._isCoded = isCoded;
     row._hasIssue = hasIssue;
-    row._delayHours = delay;
+    row._delayDays = delay;
+    row._delayHours = delay * 24;
     row._cost = cost;
 
     if (isCoded) {
@@ -208,6 +232,27 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     }
   });
 
+  const coder_metrics: CoderMetric[] = Array.from(coderMap.values())
+    .map(c => {
+      const avgDays = c.total_claims > 0 ? c.total_delay / c.total_claims : 0;
+      return {
+        name: c.name,
+        short_name: c.short_name,
+        total_claims: c.total_claims,
+        with_issues: c.with_issues,
+        with_cm_notes: c.with_cm_notes,
+        accuracy: c.total_claims > 0 ? ((c.total_claims - c.with_issues) / c.total_claims) * 100 : 0,
+        avg_delay_days: avgDays,
+        max_delay_days: c.max_delay,
+        avg_delay_hours: avgDays * 24,
+        max_delay_hours: c.max_delay * 24,
+        total_realcost: c.total_realcost,
+        avg_realcost: c.total_claims > 0 ? c.total_realcost / c.total_claims : 0
+      };
+    })
+    .filter(c => c.total_claims > 0)
+    .sort((a, b) => b.total_claims - a.total_claims);
+
   const summary: Summary = {
     total_coded: totalCoded,
     total_pending: totalPending,
@@ -216,38 +261,30 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     overall_accuracy: totalCoded > 0 ? ((totalCoded - totalIssues) / totalCoded) * 100 : 0,
     total_realcost: totalRealcost,
     avg_realcost: totalCoded > 0 ? totalRealcost / totalCoded : 0,
-    coder_count: coderMap.size,
+    coder_count: coder_metrics.length,
     room_count: roomMap.size,
     data_date: new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
     report_period: files.length > 1 ? `Gabungan ${files.length} File Laporan` : (files[0]?.name || "Data Terbaru")
   };
 
-  const coder_metrics: CoderMetric[] = Array.from(coderMap.values()).map(c => ({
-    name: c.name,
-    short_name: c.short_name,
-    total_claims: c.total_claims + c.with_cm_notes, // roughly pending + coded if using logic
-    with_issues: c.with_issues,
-    with_cm_notes: c.with_cm_notes,
-    accuracy: c.total_claims > 0 ? ((c.total_claims - c.with_issues) / c.total_claims) * 100 : 0,
-    avg_delay_hours: c.total_claims > 0 ? c.total_delay / c.total_claims : 0,
-    max_delay_hours: c.max_delay,
-    total_realcost: c.total_realcost,
-    avg_realcost: c.total_claims > 0 ? c.total_realcost / c.total_claims : 0
-  })).sort((a, b) => b.total_claims - a.total_claims);
-
-  const cm_metrics: CmMetric[] = Array.from(cmMap.values()).map(c => ({
-    name: c.name,
-    rooms: Array.from(c.rooms),
-    total_coded: c.total_coded,
-    total_pending: c.total_pending,
-    total_all: c.total_coded + c.total_pending,
-    with_issues: c.with_issues,
-    accuracy: c.total_coded > 0 ? ((c.total_coded - c.with_issues) / c.total_coded) * 100 : 0,
-    completion_rate: (c.total_coded + c.total_pending) > 0 ? (c.total_coded / (c.total_coded + c.total_pending)) * 100 : 0,
-    avg_delay_hours: c.total_coded > 0 ? c.total_delay / c.total_coded : 0,
-    max_delay_hours: c.max_delay,
-    total_realcost: c.total_realcost
-  })).sort((a, b) => b.total_all - a.total_all);
+  const cm_metrics: CmMetric[] = Array.from(cmMap.values()).map(c => {
+    const avgDays = c.total_coded > 0 ? c.total_delay / c.total_coded : 0;
+    return {
+      name: c.name,
+      rooms: Array.from(c.rooms),
+      total_coded: c.total_coded,
+      total_pending: c.total_pending,
+      total_all: c.total_coded + c.total_pending,
+      with_issues: c.with_issues,
+      accuracy: c.total_coded > 0 ? ((c.total_coded - c.with_issues) / c.total_coded) * 100 : 0,
+      completion_rate: (c.total_coded + c.total_pending) > 0 ? (c.total_coded / (c.total_coded + c.total_pending)) * 100 : 0,
+      avg_delay_days: avgDays,
+      max_delay_days: c.max_delay,
+      avg_delay_hours: avgDays * 24,
+      max_delay_hours: c.max_delay * 24,
+      total_realcost: c.total_realcost
+    };
+  }).sort((a, b) => b.total_all - a.total_all);
 
   const pic_metrics: PicMetric[] = Array.from(picMap.values()).map(p => ({
     name: p.name,
@@ -258,19 +295,24 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     accuracy: p.total_coded > 0 ? ((p.total_coded - p.with_issues) / p.total_coded) * 100 : 0,
   })).sort((a, b) => (b.total_coded + b.total_pending) - (a.total_coded + a.total_pending));
 
-  const room_metrics: RoomMetric[] = Array.from(roomMap.values()).map(r => ({
-    name: r.name,
-    smf: r.smf,
-    coder: r.coder,
-    case_manager: r.case_manager,
-    pic: r.pic,
-    total_coded: r.total_coded,
-    total_pending: r.total_pending,
-    with_issues: r.with_issues,
-    avg_delay_hours: r.total_coded > 0 ? r.total_delay / r.total_coded : 0,
-    max_delay_hours: r.max_delay,
-    total_realcost: r.total_realcost
-  })).sort((a, b) => (b.total_coded + b.total_pending) - (a.total_coded + a.total_pending));
+  const room_metrics: RoomMetric[] = Array.from(roomMap.values()).map(r => {
+    const avgDays = r.total_coded > 0 ? r.total_delay / r.total_coded : 0;
+    return {
+      name: r.name,
+      smf: r.smf,
+      coder: r.coder,
+      case_manager: r.case_manager,
+      pic: r.pic,
+      total_coded: r.total_coded,
+      total_pending: r.total_pending,
+      with_issues: r.with_issues,
+      avg_delay_days: avgDays,
+      max_delay_days: r.max_delay,
+      avg_delay_hours: avgDays * 24,
+      max_delay_hours: r.max_delay * 24,
+      total_realcost: r.total_realcost
+    };
+  }).sort((a, b) => (b.total_coded + b.total_pending) - (a.total_coded + a.total_pending));
 
   const issue_metrics = Array.from(issueMap.entries())
     .map(([issue, count]) => ({ issue, count }))

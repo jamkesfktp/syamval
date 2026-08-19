@@ -7,21 +7,24 @@ export default function BottleneckAnalysis({ data }: { data: DashboardData }) {
   const [selectedDrilldown, setSelectedDrilldown] = useState<{ title: string; subtitle: string; claims: any[] } | null>(null);
 
   const topRooms = [...data.room_metrics]
-    .sort((a, b) => b.avg_delay_hours - a.avg_delay_hours)
+    .filter(r => (r.total_coded ?? 0) > 0)
+    .sort((a, b) => (b.avg_delay_days ?? b.avg_delay_hours ?? 0) - (a.avg_delay_days ?? a.avg_delay_hours ?? 0))
     .slice(0, 5);
 
   const topCoders = [...data.coder_metrics]
-    .sort((a, b) => b.avg_delay_hours - a.avg_delay_hours)
+    .filter(c => (c.total_claims ?? 0) > 0)
+    .sort((a, b) => (b.avg_delay_days ?? b.avg_delay_hours ?? 0) - (a.avg_delay_days ?? a.avg_delay_hours ?? 0))
     .slice(0, 5);
 
   const topCms = [...data.cm_metrics]
-    .sort((a, b) => b.avg_delay_hours - a.avg_delay_hours)
+    .filter(cm => (cm.total_coded ?? 0) > 0)
+    .sort((a, b) => (b.avg_delay_days ?? b.avg_delay_hours ?? 0) - (a.avg_delay_days ?? a.avg_delay_hours ?? 0))
     .slice(0, 5);
 
-  const formatDays = (hours: number) => {
-    const d = Math.floor(hours / 24);
-    const h = Math.round(hours % 24);
-    return `${d > 0 ? d + ' hari ' : ''}${h} jam`;
+  const formatDays = (days: number) => {
+    if (!days || days <= 0) return '0 Hari';
+    if (Number.isInteger(days)) return `${days} Hari`;
+    return `${days.toFixed(1)} Hari`;
   };
 
   const handleRowClick = (type: 'room' | 'coder' | 'cm', name: string) => {
@@ -84,10 +87,10 @@ export default function BottleneckAnalysis({ data }: { data: DashboardData }) {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-right font-mono font-medium text-gray-600">
-                  {formatDays(item.avg_delay_hours)}
+                  {formatDays(item.avg_delay_days || 0)}
                 </td>
                 <td className="px-4 py-3 text-right font-mono text-red-600 font-bold">
-                  {formatDays(item.max_delay_hours)}
+                  {formatDays(item.max_delay_days || 0)}
                 </td>
                 <td className="px-3 py-3 text-center">
                   <span className="text-teal-600 font-bold text-[11px] group-hover:underline flex items-center justify-center">

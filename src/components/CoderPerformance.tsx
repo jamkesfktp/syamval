@@ -23,13 +23,15 @@ function getAccuracyFillColor(accuracy: number): string {
 }
 
 export default function CoderPerformance({ coderMetrics }: CoderPerformanceProps) {
-  const claimsData = coderMetrics.map((c) => ({
+  const activeCoders = coderMetrics.filter((c) => (c.total_claims ?? 0) > 0);
+
+  const claimsData = activeCoders.map((c) => ({
     name: c.short_name,
     'Total Klaim': c.total_claims,
     'Bermasalah': c.with_issues,
   }));
 
-  const accuracyData = coderMetrics.map((c) => ({
+  const accuracyData = activeCoders.map((c) => ({
     name: c.short_name,
     accuracy: c.accuracy,
   }));
@@ -106,7 +108,7 @@ export default function CoderPerformance({ coderMetrics }: CoderPerformanceProps
               </tr>
             </thead>
             <tbody>
-              {coderMetrics.map((coder, idx) => (
+              {activeCoders.map((coder, idx) => (
                 <tr
                   key={coder.name}
                   className={idx % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'}
@@ -128,7 +130,7 @@ export default function CoderPerformance({ coderMetrics }: CoderPerformanceProps
                       {coder.accuracy.toFixed(1)}%
                     </span>
                   </td>
-                  <td className="py-3 px-3 text-right text-gray-700">{coder.avg_delay_hours.toFixed(1)} jam</td>
+                  <td className="py-3 px-3 text-right text-gray-700">{(coder.avg_delay_days || 0).toFixed(1)} Hari</td>
                   <td className="py-3 px-3 text-right text-gray-700 whitespace-nowrap">{formatCurrency(coder.total_realcost)}</td>
                   <td className="py-3 px-3 text-right text-gray-700 whitespace-nowrap">{formatCurrency(coder.avg_realcost)}</td>
                 </tr>
