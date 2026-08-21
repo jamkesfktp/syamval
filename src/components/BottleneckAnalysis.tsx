@@ -83,7 +83,7 @@ export default function BottleneckAnalysis({ data }: { data: DashboardData }) {
                     <span className="w-5 h-5 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-bold shrink-0">
                       {idx + 1}
                     </span>
-                    <span className="truncate max-w-[140px] group-hover:text-teal-700">{item[nameKey]}</span>
+                    <span className="truncate group-hover:text-teal-700">{item[nameKey]}</span>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-right font-mono font-medium text-gray-600">
@@ -127,7 +127,7 @@ export default function BottleneckAnalysis({ data }: { data: DashboardData }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {renderTable('Top 5 Ruangan Paling Lambat', topRooms, 'name', 'room')}
         {renderTable('Top 5 Koder Paling Lambat', topCoders, 'name', 'coder')}
         {renderTable('Top 5 Case Manager Paling Lambat', topCms, 'name', 'cm')}
