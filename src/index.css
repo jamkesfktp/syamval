@@ -21,49 +21,63 @@
 
 /* Print styles */
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background-color: white !important;
+  }
+
   .print-layout {
     display: block !important;
     height: auto !important;
     overflow: visible !important;
+    background: white !important;
   }
 
   .print-layout > aside {
     display: none !important;
   }
 
-  .print-layout > main {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-
   .print-layout > main > header {
     display: none !important;
   }
 
-  .print-layout > main > div {
+  .print-layout > main,
+  #exportable-content {
+    display: block !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    height: auto !important;
     overflow: visible !important;
     padding: 0 !important;
+    background-color: white !important;
   }
 
   .print-layout .bg-white {
     break-inside: avoid;
+    page-break-inside: avoid;
     box-shadow: none !important;
     border: 1px solid #e5e7eb !important;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
   }
 
   .recharts-responsive-container {
     break-inside: avoid;
+    page-break-inside: avoid;
   }
-}
 
-/* Smooth transitions */
-* {
-  scroll-behavior: smooth;
-}
+  /* Force charts and cards to not break */
+  .grid > div {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
 
-/* Fix for Recharts text in print */
-@media print {
+  /* Fix for Recharts text in print */
   .recharts-text {
     fill: #000 !important;
   }
@@ -71,4 +85,14 @@
   .recharts-cartesian-grid-vertical line {
     stroke: #e5e7eb !important;
   }
+
+  /* Hide scrollbars during print */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Smooth transitions */
+* {
+  scroll-behavior: smooth;
 }
