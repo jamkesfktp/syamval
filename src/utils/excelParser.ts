@@ -126,7 +126,26 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
     // Exact user mapping
     const rMap = getRoomMapping(roomName);
     const smf = rMap ? rMap.smf : 'Umum';
-    const cmName = rMap ? rMap.cm : 'Dr. Case Manager';
+    let cmName = rMap ? rMap.cm : 'Dr. Case Manager';
+    
+    // Normalize Case Manager Name
+    const upperCm = cmName.toUpperCase();
+    if (upperCm.includes('RIKA')) {
+      cmName = 'dr. Rika';
+    } else if (upperCm.includes('NI MADE')) {
+      cmName = 'dr. Ni Made';
+    } else if (upperCm.includes('ANDRE')) {
+      cmName = 'dr. Andre';
+    } else if (upperCm.includes('ATHENA')) {
+      cmName = 'dr. Athena';
+    } else if (upperCm.includes('AYU')) {
+      cmName = 'dr. Ayu';
+    } else if (upperCm.includes('MANDA')) {
+      cmName = 'dr. Manda';
+    } else if (upperCm.includes('WIWI')) {
+      cmName = 'dr. Wiwi';
+    }
+
     const picName = rMap ? rMap.pic : 'PIC Terkait';
     
     // Coder from Excel, fallback to room mapping
@@ -154,6 +173,8 @@ export function parseExcelToDashboardData(files: { buffer: ArrayBuffer; name: st
       coderName = 'SALMA FAKHIRAH RUSJDI';
     } else if (upperCoder.includes('NUROH')) {
       coderName = 'NUROH SALIMAH, A.Md.RMIK';
+    } else if (upperCoder.includes('RIKA')) {
+      coderName = 'dr. Rika';
     }
     if (!coderName) coderName = 'Koder';
     
