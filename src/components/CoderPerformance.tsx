@@ -27,7 +27,7 @@ export default function CoderPerformance({ coderMetrics }: CoderPerformanceProps
 
   const claimsData = activeCoders.map((c) => ({
     name: c.short_name,
-    'Total Klaim': c.total_claims,
+    'Selesai': c.total_claims - c.with_issues,
     'Bermasalah': c.with_issues,
   }));
 
@@ -40,7 +40,7 @@ export default function CoderPerformance({ coderMetrics }: CoderPerformanceProps
     <div className="space-y-6">
       {/* Klaim per Koder Chart */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <h3 className="text-base font-semibold text-gray-800 mb-4">Klaim per Koder</h3>
+        <h3 className="text-base font-semibold text-gray-800 mb-4">Volume Klaim (Selesai vs Bermasalah)</h3>
         <div className="h-72 sm:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={claimsData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
@@ -56,7 +56,7 @@ export default function CoderPerformance({ coderMetrics }: CoderPerformanceProps
                 formatter={(value: any) => formatNumber(Number(value))}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
-              <Bar dataKey="Total Klaim" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Selesai" fill="#3b82f6" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Bermasalah" fill="#ef4444" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
